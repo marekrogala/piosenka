@@ -323,14 +323,155 @@
     });
   }
 
+  function applyView() {
+    var view = Songbook.getPreference("view") || "all";
+    document.documentElement.classList.toggle(
+      "view-songbook",
+      view === "songbook"
+    );
+    var toggles = document.querySelectorAll("[data-songbook-view-toggle]");
+    Array.prototype.forEach.call(toggles, function (btn) {
+      btn.setAttribute("aria-checked", view === "songbook" ? "true" : "false");
+    });
+    refreshArtistMenuStates();
+  }
+
+  function wireViewToggle() {
+    var toggles = document.querySelectorAll("[data-songbook-view-toggle]");
+    Array.prototype.forEach.call(toggles, function (btn) {
+      btn.addEventListener("click", function () {
+        var current = Songbook.getPreference("view") || "all";
+        Songbook.setPreference(
+          "view",
+          current === "songbook" ? "all" : "songbook"
+        );
+      });
+    });
+  }
+
+  function refreshArtistMenuStates() {
+    // Artist menu items carry data-songbook-artist-item with a slug. JS marks
+    // each one as in-songbook based on the precomputed artist→songs map that
+    // the songbook index page embeds inline.
+    var data = window.SongbookArtistSongs;
+    if (!data) {
+      var node = document.getElementById("songbook-artist-songs-data");
+      if (node) {
+        try {
+          data = JSON.parse(node.textContent);
+          window.SongbookArtistSongs = data;
+        } catch (e) {
+          data = null;
+        }
+      }
+    }
+    if (!data) return;
+    var items = document.querySelectorAll("[data-songbook-artist-item]");
+    Array.prototype.forEach.call(items, function (item) {
+      var slug = item.getAttribute("data-artist-slug");
+      var songs = (slug && data[slug]) || [];
+      var inCount = Songbook.countInBulk(songs);
+      item.setAttribute("data-in-songbook", inCount > 0 ? "true" : "false");
+      item.setAttribute("data-in-count", String(inCount));
+      var counter = item.querySelector("[data-songbook-artist-count]");
+      if (counter) {
+        counter.textContent = inCount > 0 ? inCount + "/" + songs.length : "";
+      }
+    });
+  }
+
+  // ===== Auto-switch + toast =====
+
+  var TOAST_TIMEOUT_MS = 6000;
+  var activeToast = null;
+
+  function ensureToastHost() {
+    var host = document.getElementById("songbook-toast-host");
+    if (host) return host;
+    host = document.createElement("div");
+    host.id = "songbook-toast-host";
+    host.className = "songbook-toast-host";
+    host.setAttribute("aria-live", "polite");
+    host.setAttribute("role", "status");
+    document.body.appendChild(host);
+    return host;
+  }
+
+  function showToast(message, action) {
+    var host = ensureToastHost();
+    host.innerHTML = "";
+    var toast = document.createElement("div");
+    toast.className = "songbook-toast";
+    var msg = document.createElement("span");
+    msg.className = "songbook-toast__message";
+    msg.textContent = message;
+    toast.appendChild(msg);
+    if (action) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "songbook-toast__action";
+      btn.textContent = action.label;
+      btn.addEventListener("click", function () {
+        action.onClick();
+        host.innerHTML = "";
+      });
+      toast.appendChild(btn);
+    }
+    var dismiss = document.createElement("button");
+    dismiss.type = "button";
+    dismiss.className = "songbook-toast__dismiss";
+    dismiss.setAttribute("aria-label", "Zamknij");
+    dismiss.innerHTML = "&times;";
+    dismiss.addEventListener("click", function () {
+      host.innerHTML = "";
+    });
+    toast.appendChild(dismiss);
+    host.appendChild(toast);
+    if (activeToast) clearTimeout(activeToast);
+    activeToast = setTimeout(function () {
+      if (host.firstChild === toast) host.innerHTML = "";
+    }, TOAST_TIMEOUT_MS);
+  }
+
+  function maybeAutoSwitch(addedCount) {
+    if (!addedCount) return;
+    var view = Songbook.getPreference("view") || "all";
+    var onboarded = !!Songbook.getPreference("onboarded");
+    if (view === "songbook" || onboarded) return;
+    Songbook.setPreference("view", "songbook");
+    Songbook.setPreference("onboarded", true);
+    var word = addedCount === 1 ? "piosenkę" : "piosenek";
+    showToast(
+      "Dodano " + addedCount + " " + word +
+        ". Pokazuję teraz Twój śpiewnik na górze.",
+      {
+        label: "Cofnij",
+        onClick: function () {
+          Songbook.setPreference("view", "all");
+        }
+      }
+    );
+  }
+
   ready(function () {
+    applyView();
     refreshAllHearts();
     wireRows();
     wireBars();
-    Songbook.subscribe(function () {
+    wireViewToggle();
+    Songbook.subscribe(function (event) {
       refreshAllHearts();
       var bars = document.querySelectorAll("[data-songbook-bar]");
       Array.prototype.forEach.call(bars, refreshBar);
+      refreshArtistMenuStates();
+      if (event && event.type === "preference" && event.key === "view") {
+        applyView();
+      }
+      if (event && event.type === "add") {
+        maybeAutoSwitch(1);
+      } else if (event && event.type === "bulk-add") {
+        maybeAutoSwitch(event.slugs.length);
+      }
     });
   });
 })();

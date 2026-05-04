@@ -235,14 +235,185 @@
   content: "\2665";
 }
 
+.songbook-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 150ms ease-out, border-color 150ms ease-out;
+}
+
+.songbook-view-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.songbook-view-toggle:focus-visible {
+  outline: 2px solid #2b77e6;
+  outline-offset: 2px;
+}
+
+.songbook-view-toggle__glyph {
+  font-size: 1rem;
+  color: #ff8a8a;
+}
+
+.songbook-view-toggle[aria-checked="true"] {
+  background: #fff0f0;
+  color: #b81f1f;
+  border-color: #fff0f0;
+}
+
+.songbook-view-toggle[aria-checked="true"] .songbook-view-toggle__glyph {
+  color: #e11;
+}
+
+/* View-songbook reorder + de-emphasis. Out-of-songbook items move below
+   in-songbook ones via flex order, lose color, shrink slightly. */
+
+.songbook-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.view-songbook .songbook-list > [data-in-songbook="true"] {
+  order: 0;
+}
+
+.view-songbook .songbook-list > [data-in-songbook="false"] {
+  order: 1;
+  opacity: 0.55;
+}
+
+.view-songbook .songbook-list > [data-in-songbook="false"]:first-of-type {
+  margin-top: 12px;
+}
+
+.songbook-artist-list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  padding-left: 0;
+}
+
+.view-songbook .songbook-artist-list > [data-in-songbook="true"] {
+  order: 0;
+}
+
+.view-songbook .songbook-artist-list > [data-in-songbook="false"] {
+  order: 1;
+  opacity: 0.5;
+  font-size: 0.92em;
+}
+
+.songbook-artist-list__count {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.85em;
+  color: #999;
+}
+
+.view-songbook .songbook-artist-list > [data-in-songbook="true"] .songbook-artist-list__count {
+  color: #c33;
+}
+
+/* Toast host pinned bottom-right (or full-width on mobile) for auto-switch
+   and add confirmations. */
+
+.songbook-toast-host {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  left: auto;
+  z-index: 100;
+  max-width: 360px;
+}
+
+.songbook-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #222;
+  color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  font-size: 0.95rem;
+  line-height: 1.35;
+  animation: songbook-toast-in 200ms ease-out;
+}
+
+.songbook-toast__message {
+  flex: 1 1 auto;
+}
+
+.songbook-toast__action {
+  flex: 0 0 auto;
+  background: #fff;
+  color: #222;
+  border: 0;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.songbook-toast__action:hover {
+  background: #eaeaea;
+}
+
+.songbook-toast__dismiss {
+  flex: 0 0 auto;
+  background: transparent;
+  color: #ccc;
+  border: 0;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.songbook-toast__dismiss:hover {
+  color: #fff;
+}
+
+@keyframes songbook-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .songbook-toast-host {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .song-row,
   .song-row__title,
   .song-row__heart,
-  .song-heart-button {
+  .song-heart-button,
+  .songbook-view-toggle {
     transition: none;
   }
-  .songbook-flash {
+  .songbook-flash,
+  .songbook-toast {
     animation: none;
   }
 }

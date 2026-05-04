@@ -1,11 +1,15 @@
+{% if artist_songs_json %}
+<script id="songbook-artist-songs-data" type="application/json">{{ artist_songs_json|safe }}</script>
+{% endif %}
 <div class="row">
   <div class="col-md-4">
     <div class="section">
       <h2 class="pzt-card-title">Twórcy polscy</h2>
-      <ul class="list-unstyled">
+      <ul class="songbook-artist-list">
         {% for artist in polish %}
-        <li>
+        <li data-songbook-artist-item data-artist-slug="{{ artist.slug }}" data-in-songbook="false">
           <a href="{{ artist.get_absolute_url }}" title="{{artist.name}}">{{ artist.name }}</a>
+          <span class="songbook-artist-list__count" data-songbook-artist-count></span>
         </li>
         {% endfor %}
       </ul>
@@ -14,10 +18,11 @@
   <div class="col-md-4">
     <div class="section">
       <h2 class="pzt-card-title">Twórcy zagraniczni</h2>
-      <ul class="list-unstyled">
+      <ul class="songbook-artist-list">
         {% for artist in foreign %}
-        <li>
+        <li data-songbook-artist-item data-artist-slug="{{ artist.slug }}" data-in-songbook="false">
           <a href="{{ artist.get_absolute_url }}" title="{{artist.name}}">{{ artist.name }}</a>
+          <span class="songbook-artist-list__count" data-songbook-artist-count></span>
         </li>
         {% endfor %}
       </ul>
@@ -26,10 +31,11 @@
   <div class="col-md-4">
     <div class="section">
       <h2 class="pzt-card-title">Epigoni, wykonawcy, środowisko piosenki literackiej</h2>
-      <ul class="list-unstyled">
+      <ul class="songbook-artist-list">
         {% for artist in community %}
-        <li>
+        <li data-songbook-artist-item data-artist-slug="{{ artist.slug }}" data-in-songbook="false">
           <a href="{{ artist.get_absolute_url }}" title="{{artist.name}}">{{ artist.name }}</a>
+          <span class="songbook-artist-list__count" data-songbook-artist-count></span>
         </li>
         {% endfor %}
       </ul>

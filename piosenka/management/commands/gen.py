@@ -202,6 +202,7 @@ def parse_artists():
         frontmatter_data, content = parse_file(index_md_path)
         artist_slug = os.path.relpath(subdir, ARTISTS_DIR_PATH).strip("/")
         artist = make_context_for_page(frontmatter_data, section="songs")
+        artist["slug"] = artist_slug
         artist["get_absolute_url"] = f"/spiewnik/{artist_slug}/"
         artists_by_slug[artist_slug] = artist
     return artists_by_slug
@@ -271,7 +272,7 @@ def generate_songs(artists_by_slug):
     return songs_by_artist_slug, song_notes
 
 
-def generate_songbook_index(artists_by_slug):
+def generate_songbook_index(artists_by_slug, songs_by_artist_slug):
     hero_artists = [
         artists_by_slug["jacek-kaczmarski"],
         artists_by_slug["przemyslaw-gintrowski"],
@@ -299,11 +300,18 @@ def generate_songbook_index(artists_by_slug):
     foreign_artists.sort(key=lambda x: x["name"])
     community_artists.sort(key=lambda x: x["name"])
 
+    artist_songs_map = {}
+    for artist_slug, songs in songs_by_artist_slug.items():
+        slugs = sorted({s["slug"] for s in songs if s.get("slug")})
+        if slugs:
+            artist_songs_map[artist_slug] = slugs
+
     song_index_context = {
         "hero_artists": hero_artists,
         "polish": polish_artists,
         "foreign": foreign_artists,
         "community": community_artists,
+        "artist_songs_json": json.dumps(artist_songs_map, ensure_ascii=False),
     }
     out_dir = os.path.join(OUT_DIR_PATH, ARTISTS_DIR)
     os.makedirs(out_dir, exist_ok=True)
@@ -416,7 +424,9 @@ class Command(BaseCommand):
 
         artists_by_slug = parse_artists()
         songs_by_artist_slug, song_notes = generate_songs(artists_by_slug)
-        songbook_index_context = generate_songbook_index(artists_by_slug)
+        songbook_index_context = generate_songbook_index(
+            artists_by_slug, songs_by_artist_slug
+        )
         generate_artists(artists_by_slug, songs_by_artist_slug, songbook_index_context)
 
         all_songs = {}

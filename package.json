@@ -5,7 +5,7 @@
   "description": "Build tooling for PWA assets (service worker, icons).",
   "scripts": {
     "build:icons": "node scripts/generate-icons.js",
-    "build:sw": "workbox injectManifest workbox-config.js"
+    "build:sw": "workbox generateSW workbox-config.js"
   },
   "devDependencies": {
     "sharp": "^0.34.5",

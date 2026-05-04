@@ -27,3 +27,5 @@ build/
 tools/
 assets/css/output.css
 .cache/
+.claude/
+.venv/

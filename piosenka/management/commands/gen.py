@@ -202,6 +202,12 @@ def generate_manifest():
     write_page(context, "pwa/manifest.webmanifest", out_file_path)
 
 
+def generate_offline_page():
+    context = {"user_data": {"is_logged_in": False}}
+    out_file_path = os.path.join(OUT_DIR_PATH, "offline.html")
+    write_page(context, "offline.html", out_file_path)
+
+
 def generate_pages():
     for page, template in PAGES.items():
         src_path = os.path.join(CONTENT_PATH, page, "index.md")
@@ -711,6 +717,7 @@ class Command(BaseCommand):
         generate_404_page()
         generate_saved_page()
         generate_manifest()
+        generate_offline_page()
 
         articles = generate_articles()
         articles.sort(key=lambda x: x["pub_date"], reverse=True)

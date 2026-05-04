@@ -226,6 +226,7 @@ def generate_songs(artists_by_slug):
         content_html = lyrics.render_lyrics(content)
         context = make_context_for_page(frontmatter_data, section="songs")
         context["content_html"] = content_html
+        context["slug"] = song_slug
         context["get_absolute_url"] = f"/opracowanie/{song_slug}/"
         artist_slugs = set(
             (context["text_authors"] if context["text_authors"] else [])

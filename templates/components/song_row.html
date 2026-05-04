@@ -1,0 +1,22 @@
+{# Tappable song row with title link and heart toggle. Requires: song. #}
+<div class="song-row"
+     data-songbook-row
+     data-song-slug="{{ song.slug }}"
+     data-in-songbook="false">
+  <a class="song-row__title" href="{{ song.get_absolute_url }}">
+    {{ song.title|truncatechars:60 }}
+    {% if song.num_notes == 1 %}
+    {% include 'components/icon.html' with type='tag' %}
+    {% elif song.num_notes > 1 %}
+    {% include 'components/icon.html' with type='tags' %}
+    {% endif %}
+  </a>
+  <button type="button"
+          class="song-row__heart"
+          data-songbook-heart
+          data-song-slug="{{ song.slug }}"
+          aria-pressed="false"
+          aria-label="Dodaj „{{ song.title }}” do mojego śpiewnika">
+    <span class="song-row__heart-glyph" aria-hidden="true"></span>
+  </button>
+</div>

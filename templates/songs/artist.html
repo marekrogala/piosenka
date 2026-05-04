@@ -19,18 +19,30 @@
     <div class="col-md-8">
       <div class="section">
         <h2 class="pzt-card-title">Piosenki</h2>
-        <ul class="list-unstyled">
+        {% if songs %}
+        <div class="songbook-bar" data-songbook-bar>
+          <div class="songbook-bar__counter" data-songbook-counter aria-live="polite">
+            W moim śpiewniku: <strong>0/{{ songs|length }}</strong>
+          </div>
+          <div class="songbook-bar__actions">
+            <button type="button"
+                    class="songbook-bar__button songbook-bar__button--primary"
+                    data-songbook-bulk-add>
+              Zaznacz wszystkie
+            </button>
+            <button type="button"
+                    class="songbook-bar__button"
+                    data-songbook-bulk-remove>
+              Odznacz wszystkie
+            </button>
+          </div>
+        </div>
+        <div class="songbook-list">
           {% for song in songs %}
-          <li><a href="{{ song.get_absolute_url }}">{{ song.title|truncatechars:50 }}
-            {% if song.num_notes == 1 %}
-            {% include 'components/icon.html' with type='tag' %}
-            {% elif song.num_notes > 1 %}
-            {% include 'components/icon.html' with type='tags' %}
-            {% endif %}
-            </a>
-          </li>
+          {% include "components/song_row.html" with song=song %}
           {% endfor %}
-        </ul>
+        </div>
+        {% endif %}
       </div>
     </div>
     <div class="col-md-4">
@@ -41,20 +53,11 @@
       {% if epigone_songs %}
       <div class="section">
         <h2 class="pzt-card-title">Kompozycje epigońskie</h2>
-        <p style="text-align: center">
-          <ul class="list-unstyled">
-            {% for song in epigone_songs %}
-            <li><a href="{{ song.get_absolute_url }}">{{ song.title }}
-              {% if song.num_notes == 1 %}
-              {% include 'components/icon.html' with type='tag' %}
-              {% elif song.num_notes > 1 %}
-              {% include 'components/icon.html' with type='tags' %}
-              {% endif %}
-              </a>
-            </li>
-            {% endfor %}
-          </ul>
-        </p>
+        <div class="songbook-list">
+          {% for song in epigone_songs %}
+          {% include "components/song_row.html" with song=song %}
+          {% endfor %}
+        </div>
       </div>
       {% endif %}
     </div>

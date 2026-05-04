@@ -14,6 +14,7 @@ from piosenka import lyrics
 
 PAGES = {
     "szukaj": "search.html",
+    "ustawienia": "ustawienia.html",
 }
 
 SONGS_DIR = "opracowanie"

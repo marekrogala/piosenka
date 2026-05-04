@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ustawienia — {{ site.name }}{% endblock %}
+{% block description %}Ustawienia prywatnego śpiewnika: domyślny widok, eksport, import, reset.{% endblock description %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="section">
+        <h2 class="pzt-card-title">Ustawienia mojego śpiewnika</h2>
+        <p>
+          Wszystko zostaje na Twoim urządzeniu w pamięci przeglądarki
+          (<code>localStorage</code>). Nic nie wysyłamy na serwer, niczego
+          nie zbieramy.
+        </p>
+      </div>
+
+      <div class="section">
+        <h3>Domyślny widok</h3>
+        <p class="text-muted">
+          Po otwarciu strony pokazuję:
+        </p>
+        <fieldset class="songbook-settings__radio-group" data-songbook-default-view>
+          <label class="songbook-settings__radio">
+            <input type="radio" name="songbook-default-view" value="all">
+            <span><b>Wszystko</b> — wszyscy artyści, wszystkie piosenki, bez wyróżnień.</span>
+          </label>
+          <label class="songbook-settings__radio">
+            <input type="radio" name="songbook-default-view" value="songbook">
+            <span><b>Mój śpiewnik</b> — moje na górze, reszta wyszarzona poniżej.</span>
+          </label>
+        </fieldset>
+      </div>
+
+      <div class="section">
+        <h3>Eksport</h3>
+        <p class="text-muted">
+          Pobierz JSON z listą piosenek i ustawieniami. Możesz go zaimportować
+          na innym urządzeniu, żeby przenieść swój śpiewnik.
+        </p>
+        <button type="button" class="songbook-bar__button songbook-bar__button--primary"
+                data-songbook-export>
+          Pobierz JSON
+        </button>
+        <span class="songbook-settings__inline-status" data-songbook-export-status></span>
+      </div>
+
+      <div class="section">
+        <h3>Import</h3>
+        <p class="text-muted">
+          Wczytaj wcześniej pobrany plik JSON. Wybierz, czy zastąpić istniejący
+          śpiewnik czy dołączyć nowe piosenki do tego, co masz.
+        </p>
+        <div class="songbook-settings__import">
+          <input type="file" accept="application/json,.json" data-songbook-import-file>
+          <fieldset class="songbook-settings__radio-group">
+            <label class="songbook-settings__radio">
+              <input type="radio" name="songbook-import-mode" value="merge" checked>
+              <span><b>Dołącz</b> — dodaj brakujące piosenki, nie ruszaj reszty.</span>
+            </label>
+            <label class="songbook-settings__radio">
+              <input type="radio" name="songbook-import-mode" value="replace">
+              <span><b>Zastąp</b> — wyrzuć obecny śpiewnik i wczytaj z pliku.</span>
+            </label>
+          </fieldset>
+          <button type="button" class="songbook-bar__button songbook-bar__button--primary"
+                  data-songbook-import-go disabled>
+            Wczytaj plik
+          </button>
+          <span class="songbook-settings__inline-status" data-songbook-import-status></span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Reset</h3>
+        <p class="text-muted">
+          Usuń wszystkie zaznaczone piosenki i przywróć ustawienia początkowe.
+          Tej akcji nie da się cofnąć.
+        </p>
+        <button type="button" class="songbook-bar__button songbook-bar__button--danger"
+                data-songbook-reset>
+          Wyczyść mój śpiewnik
+        </button>
+      </div>
+
+      <div class="section">
+        <h3>Co przechowujemy</h3>
+        <details class="songbook-settings__details">
+          <summary>Pokaż surowe dane</summary>
+          <pre class="songbook-settings__dump" data-songbook-dump>(ładuję…)</pre>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

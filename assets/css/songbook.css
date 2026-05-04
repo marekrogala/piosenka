@@ -85,6 +85,80 @@
   border-color: #1f60c2;
 }
 
+.songbook-bar__button--danger {
+  background: #c83e3e;
+  border-color: #c83e3e;
+  color: #fff;
+}
+
+.songbook-bar__button--danger:hover:not([disabled]) {
+  background: #a52a2a;
+  border-color: #a52a2a;
+}
+
+.songbook-settings__radio-group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.songbook-settings__radio {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 120ms ease-out;
+}
+
+.songbook-settings__radio:hover {
+  background: #f6f6f6;
+}
+
+.songbook-settings__radio input {
+  margin-top: 4px;
+}
+
+.songbook-settings__import {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.songbook-settings__inline-status {
+  display: inline-block;
+  margin-left: 12px;
+  font-size: 0.9rem;
+  color: #2a8c2a;
+}
+
+.songbook-settings__inline-status.is-error {
+  color: #b81f1f;
+}
+
+.songbook-settings__details summary {
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.songbook-settings__dump {
+  max-height: 320px;
+  overflow: auto;
+  background: #f7f7f7;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .song-row {
   display: flex;
   align-items: stretch;

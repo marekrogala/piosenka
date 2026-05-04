@@ -453,17 +453,131 @@
     );
   }
 
+  // ===== Settings page =====
+
+  function setStatus(node, message, isError) {
+    if (!node) return;
+    node.textContent = message || "";
+    node.classList.toggle("is-error", !!isError);
+  }
+
+  function refreshDump() {
+    var node = document.querySelector("[data-songbook-dump]");
+    if (!node) return;
+    node.textContent = Songbook.exportJSON();
+  }
+
+  function refreshDefaultViewRadios() {
+    var group = document.querySelector("[data-songbook-default-view]");
+    if (!group) return;
+    var current = Songbook.getPreference("view") || "all";
+    var radios = group.querySelectorAll("input[type=radio]");
+    Array.prototype.forEach.call(radios, function (radio) {
+      radio.checked = radio.value === current;
+    });
+  }
+
+  function wireSettings() {
+    var settingsRoot = document.querySelector("[data-songbook-default-view]");
+    if (settingsRoot) {
+      refreshDefaultViewRadios();
+      settingsRoot.addEventListener("change", function (event) {
+        var target = event.target;
+        if (target && target.name === "songbook-default-view") {
+          Songbook.setPreference("view", target.value);
+        }
+      });
+    }
+
+    var exportBtn = document.querySelector("[data-songbook-export]");
+    var exportStatus = document.querySelector("[data-songbook-export-status]");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", function () {
+        try {
+          var blob = new Blob([Songbook.exportJSON()], {
+            type: "application/json"
+          });
+          var url = URL.createObjectURL(blob);
+          var ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+          var link = document.createElement("a");
+          link.href = url;
+          link.download = "moj-spiewnik-" + ts + ".json";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(function () {
+            URL.revokeObjectURL(url);
+          }, 0);
+          setStatus(exportStatus, "Pobrano.");
+        } catch (e) {
+          setStatus(exportStatus, "Nie udało się pobrać.", true);
+        }
+      });
+    }
+
+    var importFile = document.querySelector("[data-songbook-import-file]");
+    var importGo = document.querySelector("[data-songbook-import-go]");
+    var importStatus = document.querySelector("[data-songbook-import-status]");
+    if (importFile && importGo) {
+      importFile.addEventListener("change", function () {
+        importGo.disabled = !importFile.files || !importFile.files.length;
+        setStatus(importStatus, "");
+      });
+      importGo.addEventListener("click", function () {
+        if (!importFile.files || !importFile.files.length) return;
+        var file = importFile.files[0];
+        var reader = new FileReader();
+        reader.onload = function () {
+          var modeInput = document.querySelector(
+            "input[name=songbook-import-mode]:checked"
+          );
+          var mode = modeInput ? modeInput.value : "merge";
+          var result = Songbook.importJSON(reader.result, mode);
+          if (result.ok) {
+            setStatus(
+              importStatus,
+              "Wczytano " + result.count + " piosenek (" + mode + ")."
+            );
+            importFile.value = "";
+            importGo.disabled = true;
+          } else {
+            setStatus(importStatus, result.error || "Błąd importu.", true);
+          }
+        };
+        reader.onerror = function () {
+          setStatus(importStatus, "Nie udało się odczytać pliku.", true);
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    var resetBtn = document.querySelector("[data-songbook-reset]");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        var ok = window.confirm(
+          "Na pewno wyczyścić cały śpiewnik? Tej akcji nie da się cofnąć."
+        );
+        if (ok) Songbook.reset();
+      });
+    }
+
+    refreshDump();
+  }
+
   ready(function () {
     applyView();
     refreshAllHearts();
     wireRows();
     wireBars();
     wireViewToggle();
+    wireSettings();
     Songbook.subscribe(function (event) {
       refreshAllHearts();
       var bars = document.querySelectorAll("[data-songbook-bar]");
       Array.prototype.forEach.call(bars, refreshBar);
       refreshArtistMenuStates();
+      refreshDefaultViewRadios();
+      refreshDump();
       if (event && event.type === "preference" && event.key === "view") {
         applyView();
       }

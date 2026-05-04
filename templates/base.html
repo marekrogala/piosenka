@@ -25,6 +25,16 @@
     <link rel="preconnect" href="https://disqus.com" crossorigin>
     <link rel="dns-prefetch" href="https://www.youtube.com">
 
+    <!-- PWA manifest + iOS install metadata. The theme-color metas above already cover the address-bar / status-bar tint for light + dark. -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Piosenka" />
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}" />
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/icon-192.png' %}" />
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/icon-512.png' %}" />
+
     <!-- avoid theme flash before app.js loads: read prefs early -->
     <script>
       (function () {

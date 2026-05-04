@@ -145,5 +145,13 @@ SITE = "https://www.piosenkaztekstem.pl"
 
 DEFAULT_FROM_EMAIL = "noreply@piosenkaztekstem.pl"
 
+# PWA / web app manifest. Override these in a fork's local settings to rebrand.
+MANIFEST_NAME = "Piosenka z tekstem"
+MANIFEST_SHORT_NAME = "Piosenka"
+MANIFEST_DESCRIPTION = "Śpiewnik piosenki literackiej, wydarzenia, refleksje"
+MANIFEST_THEME_COLOR = "#000000"
+MANIFEST_BACKGROUND_COLOR = "#ffffff"
+MANIFEST_LANG = "pl"
+
 # https://docs.djangoproject.com/en/3.2/releases/3.2/#customizing-type-of-auto-created-primary-keys
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

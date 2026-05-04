@@ -1,0 +1,7 @@
+# Fork-specific branding and site configuration.
+# Edit values to customize the deployment without touching templates or code.
+site:
+  name: "Moja Piosenka z Tekstem"
+  short_name: "Moja Piosenka"
+  description: "Mój osobisty śpiewnik piosenki literackiej"
+  copyright: "© 2026 Moja Piosenka z Tekstem"

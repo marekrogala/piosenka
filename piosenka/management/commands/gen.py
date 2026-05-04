@@ -13,12 +13,9 @@ import re
 from piosenka import lyrics
 
 PAGES = {
-    "o-stronie": "page.html",
     "szukaj": "search.html",
 }
 
-ARTICLE_DIR = "artykuly"
-BLOG_DIR = "blog"
 SONGS_DIR = "opracowanie"
 ARTISTS_DIR = "spiewnik"
 
@@ -29,6 +26,10 @@ ROOT_PATH = os.path.abspath(os.path.join(__file__, "../../../.."))
 OUT_DIR_PATH = os.path.join(ROOT_PATH, OUT_DIR)
 CONTENT_PATH = os.path.join(ROOT_PATH, CONTENT_DIR)
 ARTISTS_DIR_PATH = os.path.join(CONTENT_PATH, ARTISTS_DIR)
+
+SITE_CONFIG_PATH = os.path.join(ROOT_PATH, "site_config.yaml")
+with open(SITE_CONFIG_PATH, "r") as _site_config_file:
+    SITE_CONFIG = yaml.safe_load(_site_config_file)
 
 
 def parse_file(src_path):
@@ -152,6 +153,7 @@ def add_lead(context, content_html, lead_max_len=200):
 
 
 def write_page(context_data, template, out_file):
+    context_data.setdefault("site", SITE_CONFIG["site"])
     template = loader.get_template(template)
     rendered_template = template.render(context_data)
 
@@ -191,78 +193,6 @@ def generate_pages():
         context = make_context_for_page(frontmatter_data)
         context["content_html"] = markdown(content, extras=["break-on-newline"])
         write_page(context, template, out_file_path)
-
-
-def generate_articles():
-    article_dir_path = os.path.join(CONTENT_PATH, ARTICLE_DIR)
-    articles = []
-    for subdir, _, _ in os.walk(article_dir_path):
-        index_md_path = os.path.join(subdir, "index.md")
-        if not os.path.exists(index_md_path):
-            continue
-        frontmatter_data, content = parse_file(index_md_path)
-
-        out_dir = os.path.join(OUT_DIR_PATH, os.path.relpath(subdir, CONTENT_PATH))
-        os.makedirs(out_dir, exist_ok=True)
-        out_file_path = os.path.join(out_dir, "index.html")
-
-        article_context = make_context_for_page(frontmatter_data, section="articles")
-        content_html = markdown(content, extras=["break-on-newline"])
-        article_context["content_html"] = content_html
-        article_slug = os.path.relpath(subdir, article_dir_path).strip("/")
-        article_context["get_absolute_url"] = f"/artykuly/{article_slug}/"
-        article_context["thumb_url"] = frontmatter_data.get("cover_image_thumb_420_210")
-
-        if article_context["lead"]:
-            article_context["lead_html"] = markdown(article_context["lead"])
-        else:
-            add_lead(article_context, content_html, 200)
-
-        write_page(article_context, "page.html", out_file_path)
-        articles.append(article_context)
-    articles.sort(key=lambda x: x["pub_date"], reverse=True)
-    context = {
-        "articles": articles,
-        "user_data": {"is_logged_in": False},
-    }
-    out_file_path = os.path.join(OUT_DIR_PATH, ARTICLE_DIR, "index.html")
-    write_page(context, "articles/index.html", out_file_path)
-    return articles
-
-
-def generate_posts():
-    blog_dir_path = os.path.join(CONTENT_PATH, BLOG_DIR)
-    posts = []
-    for subdir, _, _ in os.walk(blog_dir_path):
-        index_md_path = os.path.join(subdir, "index.md")
-        if not os.path.exists(index_md_path):
-            continue
-        frontmatter_data, content = parse_file(index_md_path)
-
-        out_dir = os.path.join(OUT_DIR_PATH, os.path.relpath(subdir, CONTENT_PATH))
-        os.makedirs(out_dir, exist_ok=True)
-        out_file_path = os.path.join(out_dir, "index.html")
-
-        content_html = markdown(content, extras=["break-on-newline"])
-        post_context = make_context_for_page(frontmatter_data, section="blog")
-        post_context["content_html"] = content_html
-        post_slug = os.path.relpath(subdir, blog_dir_path).strip("/")
-        post_context["get_absolute_url"] = f"/blog/{post_slug}/"
-        add_lead(post_context, content_html, 500)
-
-        write_page(post_context, "page.html", out_file_path)
-        posts.append(post_context)
-    posts.sort(key=lambda x: x["pub_date"], reverse=True)
-    context = {
-        "all_posts": posts,
-        "new_posts": posts[:5],
-        "user_data": {"is_logged_in": False},
-    }
-    out_file_path = os.path.join(OUT_DIR_PATH, BLOG_DIR, "index.html")
-    write_page(context, "blog/index.html", out_file_path)
-    return posts
-
-
 def parse_artists():
     artists_by_slug = {}
     for subdir, _, _ in os.walk(ARTISTS_DIR_PATH):
@@ -483,9 +413,6 @@ class Command(BaseCommand):
         generate_pages()
         generate_404_page()
 
-        articles = generate_articles()
-        articles.sort(key=lambda x: x["pub_date"], reverse=True)
-        posts = generate_posts()
         artists_by_slug = parse_artists()
         songs_by_artist_slug, song_notes = generate_songs(artists_by_slug)
         songbook_index_context = generate_songbook_index(artists_by_slug)
@@ -498,22 +425,8 @@ class Command(BaseCommand):
         all_songs = list(all_songs.values())
         all_songs.sort(key=lambda x: x["pub_date"], reverse=True)
 
-        song_notes.sort(key=lambda x: x["pub_date"], reverse=True)
-
-        frontpage_context = {
-            "post": posts[0],
-            "note": song_notes[0],
-            "songs": all_songs[:10],
-            "notes": song_notes[:10],
-            "article": articles[0],
-        }
-
-        private_gen_vars_path = os.path.join(ROOT_PATH, "private_gen_vars.yaml")
-        with open(private_gen_vars_path, "r") as file:
-            private_gen_vars = yaml.safe_load(file)
-        frontpage_context["calendar_api_key"] = private_gen_vars["calendar_api_key"]
         out_file_path = os.path.join(OUT_DIR_PATH, "index.html")
-        write_page(frontpage_context, "frontpage/index.html", out_file_path)
+        write_page({}, "frontpage/index.html", out_file_path)
 
         generate_artist_index(artists_by_slug)
         generate_song_index(all_songs)

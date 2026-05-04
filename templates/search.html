@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}Szukaj{% endblock %}
-{% block description %}Opis strony internetowej Piosenka z tekstem{% endblock description %}
+{% block description %}Wyszukiwarka — {{ site.name }}{% endblock description %}
 
 {% block content %}
 <div class="container">
@@ -12,7 +12,7 @@
         <h2 class="pzt-card-title">Szukaj</h2>
         <p>
           Ewentualne reklamy wyświetlane poniżej są niezależne
-          od serwisu Piosenka z tekstem. Nie mamy możliwości ich
+          od serwisu {{ site.name }}. Nie mamy możliwości ich
           wyłączenia i nie przynoszą one naszej stronie przychodu.
         </p>
         <div class="content">

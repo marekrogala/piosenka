@@ -4,21 +4,11 @@
 <!DOCTYPE HTML>
 <html lang="pl">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PWGKYXKHWD"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-PWGKYXKHWD');
-    </script>
-
-    <title>{% block title %}Piosenka z tekstem{% endblock title %}</title>
+    <title>{% block title %}{{ site.name }}{% endblock title %}</title>
     <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index,follow" />
-    <meta name="description" content="{% block description %}Śpiewnik piosenki literackiej, wydarzenia, refleksje{% endblock description %}" />
+    <meta name="description" content="{% block description %}{{ site.description }}{% endblock description %}" />
 
     <link href="https://fonts.googleapis.com/css?family=Ubuntu&subset=latin,latin-ext" rel="stylesheet" type="text/css">
     <link rel="shortcut icon" href="{% static "images/favicon.ico" %}" />
@@ -40,7 +30,6 @@
   <body class="pzt">
     <nav class="navbar navbar-inverse navbar-fixed-top hidden-print">
     <div class="container">
-      <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
 
         <a href="/" title="Strona główna"><img src="{% static "images/feather_40.png" %}" alt="Logo: białe pióro na czarnym tle"/></a>
@@ -56,13 +45,9 @@
       </div>
 
       <div class="collapse navbar-collapse navbar-ex1-collapse site-nav">
-
-
         <ul class="nav navbar-nav">
           <li><a href="/" title="Strona główna"><span>Strona główna</span></a></li>
           <li><a href="/spiewnik/" title="Śpiewnik"><span>Piosenki</span></a></li>
-          <li><a href="/artykuly/" title="Artykuły"><span>Artykuły</span></a></li>
-          <li><a href="/o-stronie/" title="O stronie"><span>O stronie</span></a></li>
         </ul>
         <div class="navbar-right search pzt-expanded-navbar-search">
           <input type="text" class="form-control" placeholder="Jałta, Rublow, Epitafium dla ...">
@@ -77,40 +62,12 @@
         <div class="row">
           <div class="col-md-6">
             {% block header %}
-            {% if section and section == 'articles' %}
-              <h2>Artykuły</h2>
-              <p>Relacje z imprez, recenzje płyt i książek, wywiady, opisy, pytania, odpowiedzi, konkluzje, konstatacje.</p>
-            {% elif section and section == 'blog' %}
-              <h2>Blog</h2>
-              <p>Nowości na stronie: nowe materiały i zmiany techniczne.</p>
-            {% else %}
-              <h2>Piosenka z tekstem</h2>
-              <p>Strona poświęcona piosence literackiej. Artykuły, relacje z koncertów i opracowania piosenek, których <i>wymiar między konkretem a przestrzenią jest zupełnie niepojęty</i>.</p>
-            {% endif %}
+              <h2>{{ site.name }}</h2>
+              <p>{{ site.description }}</p>
             {% endblock header %}
           </div>
           <div class="col-md-6 lead-quote">
-            {% block quote %}
-            {% if section and section == 'articles' %}
-              <blockquote class="lyrics-quote">Niech toną w gorzale wspomnienia<br />
-                Z kongresu poetów czasu odnowy<br />
-                Mniej będą ważyć w kieszeniach<br />
-                Grzeczne z wydawnictw odmowy
-                <small>Przemysław Bogusz – <a href="/opracowanie/przemyslaw-bogusz-wspomnienie-o-andrzeju-bursie/">Wspomnienie o Andrzeju Bursie</a></small>
-              </blockquote>
-            {% elif section and section == 'blog' %}
-              <blockquote class="lyrics-quote">Co tam widać w perspektywie?
-                <small>Jacek Kleyff – <a href="/opracowanie/jacek-kleyff-o-pierwszym-skrzypku-dziad-kaczorowski/">O pierwszym skrzypku</a></small>
-              </blockquote>
-            {% else %}
-              <blockquote class="lyrics-quote">Tylko się pierwszy raz daj objąć <br />
-                A niech już sobie krytyk kracze! <br />
-                Choć mnodzy wciąż to z Tobą robią <br />
-                Daj wierzyć – zrobię to inaczej
-                <small>Jacek Kaczmarski – <a href="/opracowanie/jacek-kaczmarski-do-muzy-suplikacja-przy-ostrzeniu-piora/">Do muzy suplikacja przy ostrzeniu pióra</a></small>
-              </blockquote>
-            {% endif %}
-            {% endblock quote %}
+            {% block quote %}{% endblock quote %}
           </div>
         </div>
       </div>
@@ -121,7 +78,7 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12 pzt-footer-content">
-            © 2011-2025 Piosenka z tekstem
+            {{ site.copyright }}
           </div>
         </div>
       </div>
@@ -135,24 +92,11 @@
 
     <script src="{% static "js/comments.js" %}"></script>
     <script src="{% static "js/lightbox.js" %}"></script>
-    <script src="{% static "js/calendar.js" %}"></script>
     <script src="{% static "js/search.js" %}"></script>
     <script src="{% static "js/song.js" %}"></script>
     <script src="{% static "js/tooltips.js" %}"></script>
     {% endcompress %}
 
     {% block extra-scripts %}{% endblock extra-scripts %}
-
-    <!-- FB -->
-    <div id="fb-root"></div>
-    <script>
-      (function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) {return;}
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/pl_PL/all.js#xfbml=1";
-      fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'facebook-jssdk'));
-    </script>
   </body>
 </html>

@@ -11,8 +11,8 @@
 <div class="pzt-container">
   <article class="layout-split">
     <div>
-      <div class="section-card">
-        <h1 class="text-center" style="font-family:var(--font-display);font-size:clamp(28px,5vw,52px);line-height:1.1;margin:0 0 18px">{{ title }}</h1>
+      <div class="section-card" data-pagefind-meta="kind:song">
+        <h1 class="text-center" data-pagefind-meta="title" style="font-family:var(--font-display);font-size:clamp(28px,5vw,52px);line-height:1.1;margin:0 0 18px">{{ title }}</h1>
 
         <div class="grid gap-4" style="grid-template-columns:1fr;">
           <div class="song-info" style="font-size:15px;color:var(--color-ink-2)">
@@ -93,7 +93,7 @@
       {% if youtube_id %}
       <div class="section-card">
         <h2 class="card-title">Nagranie</h2>
-        <iframe src="https://www.youtube.com/embed/{{ youtube_id }}" loading="lazy" allowfullscreen></iframe>
+        <iframe src="https://www.youtube.com/embed/{{ youtube_id }}" title="Nagranie YouTube — {{ title }}" loading="lazy" allowfullscreen></iframe>
       </div>
       {% endif %}
 

@@ -6,7 +6,7 @@
   <head>
     <title>{% block title %}Piosenka z tekstem{% endblock title %}</title>
     <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#faf7f1" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#161412" media="(prefers-color-scheme: dark)">
     <meta name="robots" content="index,follow" />
@@ -40,10 +40,10 @@
     {% block analytics %}{# PR6 will plug in Plausible here #}{% endblock %}
   </head>
 
-  <body class="pzt min-h-screen flex flex-col">
+  <body class="pzt min-h-screen flex flex-col has-bottom-nav">
     <a class="skip-link" href="#main">Przejdź do treści</a>
 
-    <header class="app-bar hidden-print" role="banner">
+    <header class="app-bar hidden-print" role="banner" id="pzt-app-bar">
       <div class="pzt-container app-bar-inner">
         <a class="brand" href="/" title="Strona główna">
           <img src="{% static 'images/feather_40.png' %}" alt="" />
@@ -57,15 +57,12 @@
           <a href="/o-stronie/">O stronie</a>
         </nav>
 
-        <button type="button" class="icon-btn ml-auto-on-mobile lg-hidden" id="pzt-search-toggle" aria-label="Szukaj">
+        <button type="button" class="icon-btn ml-auto-on-mobile" data-pzt-search-trigger aria-label="Szukaj (Cmd+K)">
           <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-search"/></svg>
         </button>
-        <button type="button" class="icon-btn" id="pzt-theme-toggle" aria-label="Zmień motyw kolorystyczny">
+        <button type="button" class="icon-btn lg-only-flex" id="pzt-theme-toggle" aria-label="Zmień motyw kolorystyczny">
           <svg class="icon-sun" aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-sun"/></svg>
           <svg class="icon-moon" aria-hidden="true" style="display:none"><use href="{% static 'icons/sprite.svg' %}#lucide-moon"/></svg>
-        </button>
-        <button type="button" class="icon-btn lg-hidden" id="pzt-nav-toggle" aria-label="Otwórz menu" aria-expanded="false" aria-controls="pzt-nav-drawer">
-          <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-menu"/></svg>
         </button>
       </div>
 
@@ -75,6 +72,7 @@
           <li><a href="/spiewnik/">Piosenki</a></li>
           <li><a href="/artykuly/">Artykuły</a></li>
           <li><a href="/o-stronie/">O stronie</a></li>
+          <li><a href="/zapisane/">Zapisane</a></li>
           <li><a href="/szukaj/">Szukaj</a></li>
         </ul>
       </div>
@@ -126,7 +124,7 @@
     </section>
     {% endblock page-hero %}
 
-    <main role="main" id="main" class="flex-1">
+    <main role="main" id="main" class="flex-1" data-pagefind-body>
     {% block content %}{% endblock content %}
     </main>
 
@@ -136,10 +134,15 @@
       </div>
     </footer>
 
+    {% include "components/bottom_nav.html" %}
+    {% include "components/search_palette.html" %}
+
     {% compress js %}
     <script src="{% static 'third_party/luminous/luminous.min.js' %}"></script>
     <script src="{% static 'js/theme.js' %}"></script>
     <script src="{% static 'js/nav.js' %}"></script>
+    <script src="{% static 'js/app-bar.js' %}"></script>
+    <script src="{% static 'js/search.js' %}"></script>
     <script src="{% static 'js/song.js' %}"></script>
     <script src="{% static 'js/comments.js' %}"></script>
     <script src="{% static 'js/lightbox.js' %}"></script>

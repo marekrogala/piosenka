@@ -6,27 +6,21 @@
 
 {% block content %}
 <div class="pzt-container">
-  <div class="layout-split">
-    <div class="section-card">
-      <h2 class="card-title">Szukaj</h2>
-      <p>
-        Wyszukiwanie pełnotekstowe pojawi się w kolejnej iteracji.
-        Tymczasem skorzystaj z menu albo wpisz hasło poniżej, aby
-        wyszukać w Google.
-      </p>
-      <form action="https://www.google.com/search" method="get" class="pzt-search-input" style="max-width:480px">
+  <div class="section-card" style="max-width:680px;margin:0 auto">
+    <h2 class="card-title">Szukaj</h2>
+    <p>
+      Pełnotekstowa wyszukiwarka działa po naciśnięciu przycisku poniżej
+      lub skrótu <kbd>⌘ K</kbd> / <kbd>Ctrl K</kbd> w dowolnym miejscu strony.
+    </p>
+    <p>
+      <button type="button" class="btn btn-primary" data-pzt-search-trigger>
         <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-search"/></svg>
-        <input type="search" name="q" placeholder="np. Jałta, Rublow, Epitafium..." aria-label="Szukaj">
-        <input type="hidden" name="sitesearch" value="piosenkaztekstem.pl">
-      </form>
-    </div>
-
-    <aside class="section-card">
-      <h2 class="card-title">Nie znaleziono?</h2>
-      <p>
-        Szukasz informacji o konkretnym <b>utworze</b>? Zajrzyj do <a href="/spiewnik/">śpiewnika</a>.
-      </p>
-    </aside>
+        Otwórz wyszukiwarkę
+      </button>
+    </p>
+    <p style="color:var(--color-ink-3);font-size:14px;margin-top:18px">
+      Indeks budowany przy każdym wdrożeniu, lokalnie, bez Google.
+    </p>
   </div>
 </div>
 {% endblock content %}

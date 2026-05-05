@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Zapisane piosenki{% endblock %}
+{% block description %}Twoje zapisane piosenki w serwisie Piosenka z tekstem.{% endblock description %}
+
+{% block page-hero %}{% endblock page-hero %}
+
+{% block content %}
+<div class="pzt-container">
+  <div class="section-card pzt-saved-empty" id="pzt-saved-empty">
+    <svg class="pzt-saved-icon" aria-hidden="true">
+      <use href="{% static 'icons/sprite.svg' %}#lucide-star"/>
+    </svg>
+    <h1>Zapisane piosenki</h1>
+    <p>
+      Twoje zapisane piosenki pojawią się tutaj. Naciśnij gwiazdkę na stronie
+      piosenki, aby ją zapisać.
+    </p>
+    <p>
+      <a class="btn btn-primary" href="/spiewnik/">Przejdź do śpiewnika</a>
+    </p>
+  </div>
+</div>
+{% endblock content %}

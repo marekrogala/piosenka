@@ -179,6 +179,15 @@ def generate_404_page():
     write_page(context, "404.html", out_file_path)
 
 
+def generate_saved_page():
+    """Stub page for /zapisane/ — empty state today, populated by client-side JS later."""
+    context = {}
+    out_dir = os.path.join(OUT_DIR_PATH, "zapisane")
+    os.makedirs(out_dir, exist_ok=True)
+    out_file_path = os.path.join(out_dir, "index.html")
+    write_page(context, "saved.html", out_file_path)
+
+
 def generate_pages():
     for page, template in PAGES.items():
         src_path = os.path.join(CONTENT_PATH, page, "index.md")
@@ -482,6 +491,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         generate_pages()
         generate_404_page()
+        generate_saved_page()
 
         articles = generate_articles()
         articles.sort(key=lambda x: x["pub_date"], reverse=True)

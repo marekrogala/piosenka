@@ -1,0 +1,20 @@
+{% load static %}
+<nav class="bottom-nav hidden-print" aria-label="Nawigacja podstawowa" id="pzt-bottom-nav">
+  <button type="button" class="bn-item" id="pzt-bn-menu" aria-controls="pzt-nav-drawer" aria-expanded="false" aria-label="Otwórz menu">
+    <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-menu"/></svg>
+    <span>Menu</span>
+  </button>
+  <button type="button" class="bn-item" data-pzt-search-trigger aria-label="Szukaj">
+    <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-search"/></svg>
+    <span>Szukaj</span>
+  </button>
+  <a class="bn-item" href="/zapisane/" aria-label="Zapisane">
+    <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-star"/></svg>
+    <span>Zapisane</span>
+  </a>
+  <button type="button" class="bn-item" id="pzt-bn-theme" aria-label="Zmień motyw">
+    <svg class="bn-icon-sun" aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-sun"/></svg>
+    <svg class="bn-icon-moon" aria-hidden="true" style="display:none"><use href="{% static 'icons/sprite.svg' %}#lucide-moon"/></svg>
+    <span>Tryb</span>
+  </button>
+</nav>

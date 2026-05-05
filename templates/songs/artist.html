@@ -7,8 +7,8 @@
 {% block description %}Śpiewnik zawiera teksty i akordy do piosenek - artysta: {{ artist }}.{% endblock description %}
 
 {% block content %}
-<div class="pzt-container">
-  <h2 class="pzt-artist-heading">{{ name }}</h2>
+<div class="pzt-container" data-pagefind-meta="kind:artist">
+  <h2 class="pzt-artist-heading" data-pagefind-meta="title">{{ name }}</h2>
   <p class="lifetime">
     {% if born_on %}ur. <b>{{ born_on }}</b>{% endif %}{% if born_on and died_on %},{% endif %}
     {% if died_on %} zm. <b>{{ died_on }}</b>{% endif %}

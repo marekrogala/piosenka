@@ -147,6 +147,27 @@
   padding: 6px 0;
 }
 
+.songbook-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+}
+
+.songbook-suggestion__heart {
+  flex: 0 0 auto;
+  color: #e11;
+  font-size: 0.95rem;
+}
+
+.songbook-suggestion__title {
+  flex: 1 1 auto;
+}
+
+.songbook-suggestion--in {
+  background: #fff5f5;
+}
+
 .songbook-settings__dump {
   max-height: 320px;
   overflow: auto;

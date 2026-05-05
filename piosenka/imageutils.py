@@ -19,10 +19,18 @@ from urllib.parse import urlparse, quote
 
 from PIL import Image, ImageOps
 
+# pillow-avif-plugin registers AVIF support with Pillow on import.
+try:
+    import pillow_avif  # noqa: F401
+    _AVIF_AVAILABLE = True
+except ImportError:
+    _AVIF_AVAILABLE = False
+
 VARIANT_WIDTHS = (320, 640, 1280)
-VARIANT_FORMATS = ("webp", "jpg")
+VARIANT_FORMATS = ("avif", "webp", "jpg") if _AVIF_AVAILABLE else ("webp", "jpg")
 JPEG_QUALITY = 82
 WEBP_QUALITY = 78
+AVIF_QUALITY = 50
 
 # Resolved at import time from gen.py constants.
 _OUT_DIR = None
@@ -88,6 +96,9 @@ def _save_variant(img, out_path, fmt):
     """Save `img` (Pillow image) as fmt to out_path."""
     if fmt == "webp":
         img.save(out_path, format="WEBP", quality=WEBP_QUALITY, method=6)
+    elif fmt == "avif":
+        rgb = img.convert("RGB") if img.mode != "RGB" else img
+        rgb.save(out_path, format="AVIF", quality=AVIF_QUALITY)
     elif fmt == "jpg":
         rgb = img.convert("RGB") if img.mode != "RGB" else img
         rgb.save(out_path, format="JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)

@@ -14,9 +14,16 @@
 
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
 
-    <!-- preload primary fonts to reduce FOUT -->
+    <!-- preload latin subsets (smaller). Latin-Ext loads on-demand via @font-face when Polish glyphs are needed. -->
     <link rel="preload" href="{% static 'fonts/inter-400-normal-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="{% static 'fonts/crimson-pro-400-normal-latin-ext.woff2' %}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{% static 'fonts/crimson-pro-400-normal-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{% static 'fonts/jetbrains-mono-500-normal-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+    <!-- preload main CSS so it parallelises with HTML parsing -->
+    <link rel="preload" href="{% static 'css/output.css' %}" as="style">
+
+    <!-- third-party origin warm-up: Disqus is lazy (only when comments scroll into view), YouTube only after click on placeholder. -->
+    <link rel="preconnect" href="https://disqus.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.youtube.com">
 
     <!-- avoid theme flash before app.js loads: read prefs early -->
     <script>
@@ -30,6 +37,12 @@
       })();
     </script>
 
+    {% comment %}
+      CSS bundle: Tailwind v4 output is ~49 KB minified. We considered the
+      media="print" onload="this.media='all'" async-CSS trick but django-compress
+      strips the onload attribute, leaving the page unstyled. Sync load it is.
+      A future critical-CSS extraction pass can revisit.
+    {% endcomment %}
     {% compress css %}
     <link href="{% static 'third_party/luminous/luminous-basic.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'css/output.css' %}" rel="stylesheet" type="text/css" />
@@ -37,7 +50,13 @@
 
     {% block extra-css %}{% endblock extra-css %}
 
-    {% block analytics %}{# PR6 will plug in Plausible here #}{% endblock %}
+    {% block analytics %}
+    {% comment %}
+      Plausible: 1 KB, cookie-less, GDPR-friendly. Maintainer must claim
+      piosenkaztekstem.pl on https://plausible.io before deploying.
+    {% endcomment %}
+    <script defer data-domain="piosenkaztekstem.pl" src="https://plausible.io/js/script.js"></script>
+    {% endblock %}
   </head>
 
   <body class="pzt min-h-screen flex flex-col has-bottom-nav">
@@ -137,6 +156,9 @@
     {% include "components/bottom_nav.html" %}
     {% include "components/search_palette.html" %}
 
+    {# Disqus is lazy-loaded via IntersectionObserver in templates/base/rows/disqus.html.
+       FUTURE: migrate to Giscus (GitHub Discussions) post-PR6 to fix the bf-cache
+       Lighthouse audit — Disqus registers unload listeners that disable bf-cache. #}
     {% compress js %}
     <script src="{% static 'third_party/luminous/luminous.min.js' %}"></script>
     <script src="{% static 'js/theme.js' %}"></script>
@@ -149,7 +171,6 @@
     <script src="{% static 'js/perf-mode.js' %}"></script>
     <script src="{% static 'js/comments.js' %}"></script>
     <script src="{% static 'js/lightbox.js' %}"></script>
-    <script src="{% static 'js/calendar.js' %}"></script>
     {% endcompress %}
 
     {% block extra-scripts %}{% endblock extra-scripts %}

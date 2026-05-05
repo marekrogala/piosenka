@@ -4,17 +4,11 @@
 {% block description %}{% endblock description %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-      <div class="section">
-        <h2 class="pzt-card-title">Brak uprawnień</h2>
-        <p>Operacja nie mogła zostać wykonana, gdyż Twoje konto nie posiada
-        odpowienich uprawnień. Jeśli uważasz że to błąd, prosimy o kontakt.</p>
-      </div>
-    </div>
-    <div class="col-md-2"></div>
+<div class="pzt-container">
+  <div class="section-card prose-pzt" style="max-width:680px;margin:0 auto">
+    <h2 class="card-title">Brak uprawnień</h2>
+    <p>Operacja nie mogła zostać wykonana, gdyż Twoje konto nie posiada
+    odpowiednich uprawnień. Jeśli uważasz że to błąd, prosimy o kontakt.</p>
   </div>
 </div>
 {% endblock content %}

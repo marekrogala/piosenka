@@ -1,32 +1,24 @@
 {% extends "songs/base.html" %}
 
 {% load thumbnail %}
-{% load list_partition %}
 
 {% block title %}Piosenki{% endblock title %}
 {% block description %}Śpiewnik, opracowania i interpretacje piosenek.{% endblock description %}
 
 {% block content %}
-<div class="container">
-  {% for row in hero_artists|columns_horizontal:"3" %}
-  <div class="row">
-    {% for artist in row %}
-    <div class="col-md-4">
-      <div class="section">
-        <a href="{{artist.get_absolute_url}}">
-          <div class="thumbnail-host">
-            <img src="{{artist.image_thumb}}" class="pzt-article-thumb" />
-            <div class="thumbnail-caption">
-              <h2>{{artist.name}}
-              </h2>
-            </div>
-          </div>
-        </a>
+<div class="pzt-container">
+  <section class="card-grid mb-8" style="margin-bottom:32px">
+    {% for artist in hero_artists %}
+    <a href="{{ artist.get_absolute_url }}" class="block" style="text-decoration:none">
+      <div class="thumbnail-host">
+        <img src="{{ artist.image_thumb }}" class="pzt-article-thumb" alt="{{ artist.name }}" />
+        <div class="thumbnail-caption">
+          <h2>{{ artist.name }}</h2>
+        </div>
       </div>
-    </div>
+    </a>
     {% endfor %}
-  </div>
-  {% endfor %}
+  </section>
 
   {% include "songs/menu.html" %}
 </div>

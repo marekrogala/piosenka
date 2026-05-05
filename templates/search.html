@@ -2,48 +2,31 @@
 {% load static %}
 
 {% block title %}Szukaj{% endblock %}
-{% block description %}Opis strony internetowej Piosenka z tekstem{% endblock description %}
+{% block description %}Wyszukiwarka piosenek i artystów w serwisie Piosenka z tekstem.{% endblock description %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-8">
-      <div class="section">
-        <h2 class="pzt-card-title">Szukaj</h2>
-        <p>
-          Ewentualne reklamy wyświetlane poniżej są niezależne
-          od serwisu Piosenka z tekstem. Nie mamy możliwości ich
-          wyłączenia i nie przynoszą one naszej stronie przychodu.
-        </p>
-        <div class="content">
-          <div>
-            <script>
-              (function () {
-                var cx = '017245285351694702152:psiepzvmq98';
-                var gcse = document.createElement('script');
-                gcse.type = 'text/javascript';
-                gcse.async = true;
-                gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-                var s = document.getElementsByTagName('script')[0];
-                s.parentNode.insertBefore(gcse, s);
-              })();
-            </script>
-            <gcse:search> </gcse:search>
-          </div>
-
-        </div>
-      </div>
+<div class="pzt-container">
+  <div class="layout-split">
+    <div class="section-card">
+      <h2 class="card-title">Szukaj</h2>
+      <p>
+        Wyszukiwanie pełnotekstowe pojawi się w kolejnej iteracji.
+        Tymczasem skorzystaj z menu albo wpisz hasło poniżej, aby
+        wyszukać w Google.
+      </p>
+      <form action="https://www.google.com/search" method="get" class="pzt-search-input" style="max-width:480px">
+        <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-search"/></svg>
+        <input type="search" name="q" placeholder="np. Jałta, Rublow, Epitafium..." aria-label="Szukaj">
+        <input type="hidden" name="sitesearch" value="piosenkaztekstem.pl">
+      </form>
     </div>
 
-    <div class="col-md-4">
-      <div class="section">
-        <h2 class="pzt-card-title">Nie znaleziono?</h2>
-        <p>
-          Szukasz informacji o konkretnym <b>utworze</b>? Zajrzyj do <a href="/spiewnik/">śpiewnika</a>.
-        </p>
-      </div>
-    </div>
+    <aside class="section-card">
+      <h2 class="card-title">Nie znaleziono?</h2>
+      <p>
+        Szukasz informacji o konkretnym <b>utworze</b>? Zajrzyj do <a href="/spiewnik/">śpiewnika</a>.
+      </p>
+    </aside>
   </div>
-
 </div>
 {% endblock content %}

@@ -3,69 +3,56 @@
 {% block title %}Koncerty, przeglądy, festiwale – nadchodzące wydarzenia{% endblock %}
 
 {% block content %}
-<div class="container main">
-  <div class="row">
-    <div class="col-md-6">
-      <div class="section">
-        <h2 class="pzt-card-title">Nadchodzące wydarzenia</h2>
-        <ul class="list-unstyled">
-          {% for event in events %}
-          <li>
+<div class="pzt-container">
+  <div class="layout-split">
+    <div class="section-card">
+      <h2 class="card-title">Nadchodzące wydarzenia</h2>
+      <ul class="list-clean">
+        {% for event in events %}
+        <li>
           {% include "events/event_link.html" with event=event %}
-
           {% if user %}
           <a href="{{ event.get_edit_url }}">{% include 'components/icon.html' with type='pencil' %}</a>
           {% endif %}
-          </li>
-          {% endfor %}
-        </ul>
-        <hr />
-        <div>
-          <a href="{% url 'add_external_event' %}">
-            {% include 'components/icon.html' with type='plus' %}
-            Dodaj nowe wydarzenie (odnośnik)
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="section">
-        <h2 class="pzt-card-title">Polecamy i pozdrawiamy</h2>
-        <table class="table table-striped">
-        {% for performer in performers %}
-        <tr>
-        <td>{{ performer }}</td>
-        <td>
-        {% if performer.website %}
-        <a href="{{ performer.website }}" target="_blank">strona internetowa
-          {% include 'components/icon.html' with type='new-window' %}
-        </a>
-        {% endif %}
-        {% if performer.fb_page_id %}
-        <a href="https://www.facebook.com/{{performer.fb_page_id}}" target="_blank">Facebook
-          {% include 'components/icon.html' with type='new-window' %}
-        </a>
-        {% endif %}
-        </td>
-        </tr>
+        </li>
         {% endfor %}
-        </table>
+      </ul>
+      <hr />
+      <div>
+        <a href="{% url 'add_external_event' %}">
+          {% include 'components/icon.html' with type='plus' %}
+          Dodaj nowe wydarzenie (odnośnik)
+        </a>
       </div>
     </div>
+    <aside>
+      <div class="section-card">
+        <h2 class="card-title">Polecamy i pozdrawiamy</h2>
+        <ul class="list-clean">
+        {% for performer in performers %}
+        <li>
+          <b>{{ performer }}</b>
+          {% if performer.website %}
+          &middot; <a href="{{ performer.website }}" target="_blank" rel="noopener">strona internetowa
+            {% include 'components/icon.html' with type='external-link' %}
+          </a>
+          {% endif %}
+          {% if performer.fb_page_id %}
+          &middot; <a href="https://www.facebook.com/{{ performer.fb_page_id }}" target="_blank" rel="noopener">Facebook
+            {% include 'components/icon.html' with type='external-link' %}
+          </a>
+          {% endif %}
+        </li>
+        {% endfor %}
+        </ul>
+      </div>
+    </aside>
   </div>
 </div>
 {% endblock content %}
 
 {% block extra-scripts %}
-<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_js_api_key }}"></script> 
-
-<script>
-  if (typeof(load_location) == "function") {
-    $(document).ready(
-      function(){
-        load_location();
-      }
-    );
-  }
-</script>
+{% if google_maps_js_api_key %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_js_api_key }}" defer></script>
+{% endif %}
 {% endblock extra-scripts %}

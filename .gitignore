@@ -26,3 +26,4 @@ build/
 .firebase
 tools/
 assets/css/output.css
+.cache/

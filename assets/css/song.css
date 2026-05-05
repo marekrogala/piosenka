@@ -59,6 +59,10 @@
     font-size: 14px;
 }
 
+.lyrics {
+    font-size: 16px;
+}
+
 .lyrics small, .container blockquote small {
     font-size: 85%;
 }

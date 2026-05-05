@@ -2,6 +2,11 @@ const CALENDAR_ID = "783da56c0eb669182662debbda9deac997e1348cd94ad6e42ff6f697854
 const MAX_EVENTS = 25;
 
 async function fetchEvents() {
+    if (typeof CALENDAR_API_KEY === "undefined") {
+        // No API key configured (e.g. local builds); bail silently.
+        return;
+    }
+
     const now = new Date().toISOString();
     const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?key=${CALENDAR_API_KEY}&maxResults=${MAX_EVENTS}&orderBy=startTime&singleEvents=true&timeMin=${now}`;
 

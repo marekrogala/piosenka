@@ -288,6 +288,7 @@ def parse_artists():
 
 def generate_songs(artists_by_slug):
     songs_by_artist_slug = {}
+    pending = []  # list of (context, out_file_path) to write after computing prev/next
 
     songs_dir_path = os.path.join(CONTENT_PATH, SONGS_DIR)
     song_notes = []
@@ -304,6 +305,7 @@ def generate_songs(artists_by_slug):
 
         content_html = lyrics.render_lyrics(content)
         context = make_context_for_page(frontmatter_data, section="songs")
+        context["slug"] = song_slug
         context["content_html"] = content_html
         context["get_absolute_url"] = f"/opracowanie/{song_slug}/"
         artist_slugs = set(
@@ -312,6 +314,8 @@ def generate_songs(artists_by_slug):
             + (context["translators"] if context["translators"] else [])
             + (context["performers"] if context["performers"] else [])
         )
+        # Track raw artist slug list for prev/next ordering decisions later.
+        context["_artist_slugs"] = list(artist_slugs)
         for artist_slug in artist_slugs:
             if artist_slug not in songs_by_artist_slug:
                 songs_by_artist_slug[artist_slug] = []
@@ -343,9 +347,40 @@ def generate_songs(artists_by_slug):
 
         context["notes"] = notes
         context["num_notes"] = len(notes)
+        pending.append((context, out_file_path))
+        song_notes += notes
+
+    # Compute prev/next URL for each song using the first artist's sorted song list.
+    # Falls back to global chronological order (by pub_date desc) when no artist list helps.
+    sorted_by_artist = {}
+    for artist_slug, songs in songs_by_artist_slug.items():
+        sorted_by_artist[artist_slug] = sorted(songs, key=polish_sort_key)
+
+    for context, out_file_path in pending:
+        prev_url = None
+        next_url = None
+        artist_slugs = context.get("_artist_slugs") or []
+        if artist_slugs:
+            primary = artist_slugs[0]
+            siblings = sorted_by_artist.get(primary, [])
+            try:
+                idx = next(
+                    i
+                    for i, s in enumerate(siblings)
+                    if s["get_absolute_url"] == context["get_absolute_url"]
+                )
+                if idx > 0:
+                    prev_url = siblings[idx - 1]["get_absolute_url"]
+                if idx < len(siblings) - 1:
+                    next_url = siblings[idx + 1]["get_absolute_url"]
+            except StopIteration:
+                pass
+        context["prev_song_url"] = prev_url
+        context["next_song_url"] = next_url
+        # Drop helper before render
+        context.pop("_artist_slugs", None)
         write_page(context, "songs/song.html", out_file_path)
 
-        song_notes += notes
     return songs_by_artist_slug, song_notes
 
 

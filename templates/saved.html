@@ -8,18 +8,21 @@
 
 {% block content %}
 <div class="pzt-container">
-  <div class="section-card pzt-saved-empty" id="pzt-saved-empty">
-    <svg class="pzt-saved-icon" aria-hidden="true">
-      <use href="{% static 'icons/sprite.svg' %}#lucide-star"/>
-    </svg>
-    <h1>Zapisane piosenki</h1>
-    <p>
-      Twoje zapisane piosenki pojawią się tutaj. Naciśnij gwiazdkę na stronie
-      piosenki, aby ją zapisać.
-    </p>
-    <p>
-      <a class="btn btn-primary" href="/spiewnik/">Przejdź do śpiewnika</a>
-    </p>
+  <div class="pzt-saved-page">
+    <h1 class="pzt-saved-page-title">Zapisane piosenki</h1>
+    <div id="pzt-saved-list" class="pzt-saved-list" hidden></div>
+    <div class="section-card pzt-saved-empty" id="pzt-saved-empty">
+      <svg class="pzt-saved-icon" aria-hidden="true">
+        <use href="{% static 'icons/sprite.svg' %}#lucide-star"/>
+      </svg>
+      <p>
+        Tu pojawią się Twoje zapisane piosenki. Naciśnij gwiazdkę na stronie
+        piosenki, aby ją zapisać.
+      </p>
+      <p>
+        <a class="btn btn-primary" href="/spiewnik/">Przejdź do śpiewnika</a>
+      </p>
+    </div>
   </div>
 </div>
 {% endblock content %}

@@ -8,92 +8,66 @@
 {% block page-hero %}{% endblock page-hero %}
 
 {% block content %}
-<div class="pzt-container">
-  <article class="layout-split">
-    <div>
-      <div class="section-card" data-pagefind-meta="kind:song">
-        <h1 class="text-center" data-pagefind-meta="title" style="font-family:var(--font-display);font-size:clamp(28px,5vw,52px);line-height:1.1;margin:0 0 18px">{{ title }}</h1>
+<div class="pzt-container pzt-song-page" data-pagefind-meta="kind:song">
+  <header class="pzt-song-header">
+    <h1 class="pzt-song-title" data-pagefind-meta="title">{{ title }}</h1>
+    <p class="pzt-song-meta">
+      {% if text_authors %}
+      <span class="meta-pair"><span class="meta-key">Tekst:</span>
+        {% include "songs/artist_list.html" with artists=text_authors %}
+      </span>
+      {% endif %}
+      {% if composers %}
+      <span class="meta-pair"><span class="meta-key">Muzyka:</span>
+        {% include "songs/artist_list.html" with artists=composers %}
+      </span>
+      {% endif %}
+      {% if translators %}
+      <span class="meta-pair"><span class="meta-key">Tłumaczenie:</span>
+        {% include "songs/artist_list.html" with artists=translators %}
+      </span>
+      {% endif %}
+      {% if performers %}
+      <span class="meta-pair"><span class="meta-key">Wykonanie:</span>
+        {% include "songs/artist_list.html" with artists=performers %}
+      </span>
+      {% endif %}
+    </p>
+    {% if original_title %}
+    <p class="pzt-song-meta-secondary"><span class="meta-key">Tytuł oryginalny:</span> <i>{{ original_title }}</i></p>
+    {% endif %}
+    {% if capo_fret %}
+    <p class="pzt-song-meta-secondary"><span class="meta-key">Kapodaster:</span> {{ capo_fret }}</p>
+    {% endif %}
+  </header>
 
-        <div class="grid gap-4" style="grid-template-columns:1fr;">
-          <div class="song-info" style="font-size:15px;color:var(--color-ink-2)">
-            {% if original_title %}
-            <p><b>Tytuł oryginalny:</b> <i>{{ original_title }}</i></p>
-            {% endif %}
-
-            {% if text_authors %}
-            <p><b>Tekst:</b>
-            {% include "songs/artist_list.html" with artists=text_authors %}
-            </p>
-            {% endif %}
-
-            {% if composers %}
-            <p><b>Muzyka:</b>
-            {% include "songs/artist_list.html" with artists=composers %}
-            </p>
-            {% endif %}
-
-            {% if translators %}
-            <p><b>Tłumaczenie:</b>
-            {% include "songs/artist_list.html" with artists=translators %}
-            </p>
-            {% endif %}
-
-            {% if performers %}
-            <p><b>Wykonanie:</b>
-            {% include "songs/artist_list.html" with artists=performers %}
-            </p>
-            {% endif %}
-
-            {% if capo_fret %}
-            <p><b>Kapodaster:</b> {{ capo_fret }} </p>
-            {% endif %}
-          </div>
-
-          <div class="song-gadget hidden-print" role="toolbar" aria-label="Sterowanie akordami">
-            <div class="gadget-row">
-              <button type="button" class="btn btn-secondary trans-up-trigger" aria-label="Półton w górę" title="Półton w górę">
-                <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-arrow-up"/></svg>
-              </button>
-              <button type="button" class="btn btn-secondary trans-home-trigger" aria-label="Zapis oryginalny" title="Zapis oryginalny">
-                <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-home"/></svg>
-              </button>
-              <button type="button" class="btn btn-secondary trans-down-trigger" aria-label="Półton w dół" title="Półton w dół">
-                <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-arrow-down"/></svg>
-              </button>
-              <span title="Transponuj akordy w górę lub w dół." aria-hidden="true" style="color:var(--color-ink-3);margin-left:6px">
-                <svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round"><use href="{% static 'icons/sprite.svg' %}#lucide-help-circle"/></svg>
-              </span>
-            </div>
-
-            <div class="gadget-row">
-              <button type="button" class="btn btn-primary chords-trigger chords-normal-trigger" aria-label="Wyświetl akordy" title="Wyświetl akordy">
-                <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-music"/></svg>
-              </button>
-              <button type="button" class="btn btn-secondary chords-trigger chords-none-trigger" aria-label="Tylko tekst" title="Tylko tekst">
-                <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-type"/></svg>
-              </button>
-              <span title="Wyświetl lub ukryj akordy." aria-hidden="true" style="color:var(--color-ink-3);margin-left:6px">
-                <svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round"><use href="{% static 'icons/sprite.svg' %}#lucide-help-circle"/></svg>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <hr />
-
-        <div class="lyrics">
-          {{ content_html|safe }}
-        </div>
-
-        {% include "components/content_foot.html" with action="Dodane" %}
+  <div class="pzt-song-layout">
+    <article class="pzt-song-main">
+      <div class="lyrics" id="pzt-lyrics-main">
+        {{ content_html|safe }}
       </div>
-    </div>
+      {% include "components/content_foot.html" with action="Dodane" %}
+    </article>
 
-    <aside class="hidden-print">
+    <aside class="pzt-song-aside hidden-print">
       {% if youtube_id %}
       <div class="section-card">
         <h2 class="card-title">Nagranie</h2>
-        <iframe src="https://www.youtube.com/embed/{{ youtube_id }}" title="Nagranie YouTube — {{ title }}" loading="lazy" allowfullscreen></iframe>
+        <button type="button"
+                class="yt-embed-placeholder"
+                data-yt-id="{{ youtube_id }}"
+                aria-label="Odtwórz nagranie YouTube — {{ title }}">
+          <img src="https://i.ytimg.com/vi/{{ youtube_id }}/mqdefault.jpg"
+               alt=""
+               loading="lazy"
+               decoding="async"
+               width="320"
+               height="180" />
+          <span class="yt-play-overlay" aria-hidden="true">
+            <svg><use href="{% static 'icons/sprite.svg' %}#lucide-play"/></svg>
+          </span>
+          <span class="yt-embed-title">Nagranie YouTube — {{ title }}</span>
+        </button>
       </div>
       {% endif %}
 
@@ -128,8 +102,39 @@
       </div>
       {% endif %}
     </aside>
-  </article>
+  </div>
 
   {% include "base/rows/disqus.html" with disqus_id=song.slug %}
 </div>
+
+{% include "components/chord_bar.html" with song_slug=slug song_save_title=title song_save_artist=text_authors|default:performers %}
+
+<dialog id="pzt-perf-mode" class="pzt-perf-dialog" aria-label="Tryb pełnoekranowy">
+  <div class="pzt-perf-inner">
+    <div class="pzt-perf-controls" role="toolbar" aria-label="Sterowanie trybem pełnoekranowym">
+      <button type="button" class="cb-btn perf-prev-trigger" aria-label="Poprzednia piosenka" title="Poprzednia piosenka">
+        <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-chevron-left"/></svg>
+      </button>
+      <button type="button" class="cb-btn trans-down-trigger" aria-label="Półton w dół" title="Półton w dół">
+        <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-arrow-down"/></svg>
+      </button>
+      <button type="button" class="cb-btn trans-home-trigger" aria-label="Zapis oryginalny" title="Zapis oryginalny">
+        <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-home"/></svg>
+      </button>
+      <button type="button" class="cb-btn trans-up-trigger" aria-label="Półton w górę" title="Półton w górę">
+        <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-arrow-up"/></svg>
+      </button>
+      <button type="button" class="cb-btn perf-next-trigger" aria-label="Następna piosenka" title="Następna piosenka">
+        <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-chevron-right"/></svg>
+      </button>
+      <button type="button" class="cb-btn perf-close-trigger" aria-label="Zamknij tryb pełnoekranowy" title="Zamknij">
+        <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-x"/></svg>
+      </button>
+    </div>
+    <h1 class="pzt-perf-title">{{ title }}</h1>
+    <div class="pzt-perf-lyrics lyrics" id="pzt-perf-lyrics">
+      {{ content_html|safe }}
+    </div>
+  </div>
+</dialog>
 {% endblock content %}

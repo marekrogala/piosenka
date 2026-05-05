@@ -1,0 +1,47 @@
+{% load static %}
+<nav class="pzt-chord-bar hidden-print"
+     aria-label="Sterowanie piosenką"
+     id="pzt-chord-bar"
+     {% if prev_song_url %}data-prev-song-url="{{ prev_song_url }}"{% endif %}
+     {% if next_song_url %}data-next-song-url="{{ next_song_url }}"{% endif %}>
+  <div class="pzt-chord-bar-group" role="group" aria-label="Transpozycja">
+    <button type="button" class="cb-btn trans-up-trigger" aria-label="Półton w górę" title="Półton w górę">
+      <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-arrow-up"/></svg>
+    </button>
+    <button type="button" class="cb-btn trans-home-trigger" aria-label="Zapis oryginalny" title="Zapis oryginalny">
+      <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-home"/></svg>
+    </button>
+    <button type="button" class="cb-btn trans-down-trigger" aria-label="Półton w dół" title="Półton w dół">
+      <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-arrow-down"/></svg>
+    </button>
+  </div>
+
+  <span class="pzt-chord-bar-divider" aria-hidden="true"></span>
+
+  <div class="pzt-chord-bar-group" role="group" aria-label="Wyświetlanie">
+    <button type="button" class="cb-btn chords-trigger chords-normal-trigger is-active"
+            aria-label="Wyświetl akordy" aria-pressed="true" title="Wyświetl akordy">
+      <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-music"/></svg>
+    </button>
+    <button type="button" class="cb-btn chords-trigger chords-none-trigger"
+            aria-label="Tylko tekst" aria-pressed="false" title="Tylko tekst">
+      <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-type"/></svg>
+    </button>
+  </div>
+
+  <span class="pzt-chord-bar-divider" aria-hidden="true"></span>
+
+  <div class="pzt-chord-bar-group" role="group" aria-label="Narzędzia">
+    <button type="button" class="cb-btn perf-mode-trigger"
+            aria-label="Tryb pełnoekranowy" title="Tryb pełnoekranowy">
+      <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-expand"/></svg>
+    </button>
+    <button type="button" class="cb-btn save-toggle"
+            aria-label="Zapisz piosenkę" aria-pressed="false" title="Zapisz piosenkę"
+            data-song-slug="{{ song_slug }}"
+            data-song-title="{{ song_save_title }}"
+            data-song-artist="{{ song_save_artist }}">
+      <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-star"/></svg>
+    </button>
+  </div>
+</nav>

@@ -18,12 +18,19 @@
 
   function setActive(sel, active) {
     $$(sel).forEach(function (el) {
+      // Maintain back-compat with old .btn-primary / .btn-secondary buttons,
+      // and new .cb-btn buttons in the chord-bar (use .is-active + aria-pressed).
       if (active) {
         el.classList.add('btn-primary');
         el.classList.remove('btn-secondary');
+        el.classList.add('is-active');
       } else {
         el.classList.add('btn-secondary');
         el.classList.remove('btn-primary');
+        el.classList.remove('is-active');
+      }
+      if (el.classList.contains('cb-btn') || el.classList.contains('chords-trigger')) {
+        el.setAttribute('aria-pressed', active ? 'true' : 'false');
       }
     });
   }

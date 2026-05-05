@@ -56,6 +56,7 @@
     {% compress css %}
     <link href="{% static 'third_party/luminous/luminous-basic.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'css/output.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/install-prompt.css' %}" rel="stylesheet" type="text/css" />
     {% endcompress %}
 
     {% block extra-css %}{% endblock extra-css %}
@@ -181,6 +182,7 @@
     <script src="{% static 'js/perf-mode.js' %}"></script>
     <script src="{% static 'js/comments.js' %}"></script>
     <script src="{% static 'js/lightbox.js' %}"></script>
+    <script src="{% static 'js/install-prompt.js' %}"></script>
     {% endcompress %}
 
     {% block extra-scripts %}{% endblock extra-scripts %}

@@ -564,6 +564,36 @@
     refreshDump();
   }
 
+  // ===== Onboarding tooltip (first artist-page visit) =====
+
+  function maybeShowOnboarding() {
+    if (Songbook.getPreference("onboarded")) return;
+    var bar = document.querySelector("[data-songbook-bar]");
+    if (!bar) return;
+    if (document.querySelector(".songbook-onboarding")) return;
+    var box = document.createElement("div");
+    box.className = "songbook-onboarding";
+    box.setAttribute("role", "note");
+    box.innerHTML =
+      '<span class="songbook-onboarding__message">' +
+      'Tap rząd lub serce, żeby dodać piosenkę do swojego śpiewnika. ' +
+      'Albo <b>Zaznacz wszystkie</b> naraz.' +
+      '</span>' +
+      '<button type="button" class="songbook-onboarding__dismiss" aria-label="Zamknij">&times;</button>';
+    bar.parentNode.insertBefore(box, bar);
+    var dismissBtn = box.querySelector(".songbook-onboarding__dismiss");
+    var dismiss = function () {
+      if (box.parentNode) box.parentNode.removeChild(box);
+      Songbook.setPreference("onboarded", true);
+    };
+    dismissBtn.addEventListener("click", dismiss);
+    bar.addEventListener("click", dismiss, { once: true });
+    var firstHeart = document.querySelector("[data-songbook-row] [data-songbook-heart]");
+    if (firstHeart) {
+      firstHeart.addEventListener("click", dismiss, { once: true });
+    }
+  }
+
   ready(function () {
     applyView();
     refreshAllHearts();
@@ -571,6 +601,7 @@
     wireBars();
     wireViewToggle();
     wireSettings();
+    maybeShowOnboarding();
     Songbook.subscribe(function (event) {
       refreshAllHearts();
       var bars = document.querySelectorAll("[data-songbook-bar]");

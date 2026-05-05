@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PzT — Design Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --surface-paper: #faf7f1;
+  --surface-card:  #ffffff;
+  --surface-sunken:#f0ece4;
+  --ink-1:#1a1816;
+  --ink-2:#4a4540;
+  --ink-3:#847d74;
+  --ink-4:#c9c2b8;
+  --accent:       #8b1e2d;
+  --accent-hover: #6a141f;
+  --accent-soft:  #f4e6e3;
+  --chord:        #2c5f7a;
+
+  --font-display:"Crimson Pro",Georgia,serif;
+  --font-body:"Inter",-apple-system,system-ui,sans-serif;
+  --font-lyric:"Crimson Pro",Georgia,serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+
+  --space-1:4px; --space-2:8px; --space-3:12px;
+  --space-4:16px; --space-5:24px; --space-6:32px;
+  --space-7:48px; --space-8:64px;
+
+  --radius-sm:6px; --radius-md:12px; --radius-lg:20px;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / .06);
+  --shadow-2: 0 6px 24px -8px rgb(0 0 0 / .18);
+}
+[data-theme="dark"] {
+  --surface-paper:#161412;
+  --surface-card:#1f1c19;
+  --surface-sunken:#0e0c0b;
+  --ink-1:#f0eae0;
+  --ink-2:#b8afa3;
+  --ink-3:#847d74;
+  --ink-4:#3d3833;
+  --accent:#d97181;
+  --accent-hover:#e89aa6;
+  --accent-soft:#2a1a1d;
+  --chord:#7fb3c8;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--font-body);
+  background:var(--surface-paper);
+  color:var(--ink-1);
+  font-size:17px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.preview-wrap{max-width:1200px;margin:0 auto;padding:var(--space-5) var(--space-2)}
+@media(min-width:700px){.preview-wrap{padding:var(--space-6) var(--space-4)}}
+.theme-row{display:grid;grid-template-columns:1fr;gap:var(--space-3)}
+@media(min-width:900px){.theme-row{grid-template-columns:1fr 1fr;gap:var(--space-4)}}
+.theme-frame{
+  background:var(--surface-paper);
+  color:var(--ink-1);
+  border:1px solid var(--ink-4);
+  border-radius:var(--radius-lg);
+  padding:var(--space-3);
+  overflow:hidden;
+}
+@media(min-width:700px){.theme-frame{padding:var(--space-5)}}
+.theme-label{
+  font:600 12px/1 var(--font-body);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  margin:0 0 var(--space-3) 0;
+}
+.section-title{
+  font:600 13px/1 var(--font-body);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  margin:var(--space-6) 0 var(--space-3);
+}
+
+/* ===== color swatches ===== */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:var(--space-2)}
+.swatch{
+  border-radius:var(--radius-sm);
+  padding:var(--space-3);
+  font:500 12px/1.3 var(--font-mono);
+  border:1px solid var(--ink-4);
+  min-height:64px;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.swatch .name{font-weight:600}
+.swatch .hex{opacity:.85}
+
+/* ===== type scale ===== */
+.type-row{padding:var(--space-2) 0;border-bottom:1px solid var(--ink-4)}
+.type-meta{font:500 11px/1 var(--font-mono);color:var(--ink-3);letter-spacing:.05em}
+.t-display{font:700 56px/1.1 var(--font-display);margin:0}
+.t-h1{font:700 40px/1.15 var(--font-display);margin:0}
+.t-h2{font:600 28px/1.3 var(--font-display);margin:0}
+.t-h3{font:600 20px/1.35 var(--font-body);margin:0}
+.t-body{font:400 18px/1.6 var(--font-body);margin:0}
+.t-lyric{font:400 20px/1.75 var(--font-lyric);margin:0}
+.t-chord{font:600 14px/1 var(--font-mono);color:var(--chord)}
+.t-caption{font:400 14px/1.4 var(--font-body);color:var(--ink-3)}
+@media (max-width:600px){
+  .t-display{font-size:32px}
+  .t-h1{font-size:28px}
+  .t-h2{font-size:22px}
+  .t-body{font-size:17px}
+  .t-lyric{font-size:18px;line-height:1.7}
+}
+
+/* ===== mock app-bar ===== */
+.app-bar{
+  display:flex;align-items:center;gap:var(--space-3);
+  padding:var(--space-3) var(--space-4);
+  background:var(--surface-card);
+  border-radius:var(--radius-md);
+  border:1px solid var(--ink-4);
+  box-shadow:var(--shadow-1);
+}
+.app-bar .back{
+  width:44px;height:44px;border-radius:var(--radius-sm);
+  display:grid;place-items:center;border:none;background:transparent;
+  color:var(--ink-1);cursor:pointer;font-size:20px;
+}
+.app-bar .crumb{font:500 15px/1 var(--font-body);color:var(--ink-2)}
+.app-bar .crumb b{color:var(--ink-1);font-weight:600}
+
+/* ===== mock song reader ===== */
+.song-mock{
+  background:var(--surface-card);
+  border:1px solid var(--ink-4);
+  border-radius:var(--radius-md);
+  padding:var(--space-4) var(--space-3);
+  margin-top:var(--space-2);
+}
+@media(min-width:700px){.song-mock{padding:var(--space-6) var(--space-5) var(--space-5)}}
+.song-mock h1{
+  font:700 clamp(32px,5vw,56px)/1.1 var(--font-display);
+  text-align:center;
+  margin:0 0 var(--space-2);
+}
+.song-mock .meta{
+  text-align:center;color:var(--ink-2);
+  font:400 14px/1.5 var(--font-body);
+  margin:0 0 var(--space-5);
+}
+.song-mock .meta b{color:var(--ink-1);font-weight:600}
+.lyric-line{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:var(--space-3);
+  align-items:baseline;
+  padding:2px 0;
+  font:400 19px/1.7 var(--font-lyric);
+  color:var(--ink-1);
+}
+.lyric-line .chords{
+  font:600 13px/1 var(--font-mono);
+  color:var(--chord);
+  white-space:nowrap;
+  letter-spacing:.04em;
+  text-align:right;
+  min-width:5ch;
+}
+@media(max-width:480px){
+  .lyric-line{font-size:18px}
+  .lyric-line .chords{font-size:12px;min-width:4ch}
+}
+.stanza{margin-bottom:var(--space-4)}
+
+/* ===== chord bar ===== */
+.chord-bar{
+  display:flex;gap:var(--space-2);
+  padding:var(--space-2);
+  background:var(--surface-card);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-2);
+  border:1px solid var(--ink-4);
+  margin-top:var(--space-4);
+  width:fit-content;
+}
+.chord-bar .group{display:flex;gap:2px;padding:0 var(--space-2);border-right:1px solid var(--ink-4)}
+.chord-bar .group:last-child{border-right:none}
+.chord-bar button{
+  width:48px;height:48px;border-radius:var(--radius-sm);
+  background:transparent;border:none;color:var(--ink-1);
+  font-size:18px;cursor:pointer;
+  display:grid;place-items:center;
+  font-family:var(--font-body);
+}
+.chord-bar button:hover{background:var(--surface-sunken)}
+.chord-bar button.active{background:var(--accent);color:#fff}
+
+/* ===== buttons ===== */
+.btn-row{display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center}
+.btn{
+  font:500 15px/1 var(--font-body);
+  padding:14px 20px;border-radius:var(--radius-sm);
+  cursor:pointer;border:1px solid transparent;
+  min-height:48px;display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-secondary{background:transparent;color:var(--ink-1);border-color:var(--ink-4)}
+.btn-secondary:hover{background:var(--surface-sunken)}
+.btn-ghost{background:transparent;color:var(--accent)}
+.btn-ghost:hover{background:var(--accent-soft)}
+
+/* ===== artist tile ===== */
+.tile-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-3)}
+@media(min-width:600px){.tile-grid{grid-template-columns:repeat(4,1fr)}}
+.artist-tile{
+  background:var(--surface-card);border:1px solid var(--ink-4);
+  border-radius:var(--radius-md);overflow:hidden;
+  box-shadow:var(--shadow-1);
+  display:flex;flex-direction:column;
+}
+.artist-tile .photo{
+  aspect-ratio:1;background:var(--surface-sunken);
+  display:grid;place-items:center;
+  font:400 32px var(--font-display);color:var(--ink-3);
+  filter:grayscale(1) contrast(1.05);
+}
+.artist-tile .body{padding:var(--space-3)}
+.artist-tile .name{font:600 16px/1.2 var(--font-body);color:var(--ink-1);margin:0 0 2px}
+.artist-tile .count{font:500 13px/1 var(--font-body);color:var(--ink-3);margin:0}
+
+/* ===== quote ===== */
+.lit-quote{
+  border-left:3px solid var(--accent);
+  padding:var(--space-2) 0 var(--space-2) var(--space-4);
+  font:italic 400 19px/1.6 var(--font-display);
+  color:var(--ink-1);
+  margin:var(--space-4) 0;
+}
+.lit-quote small{
+  display:block;
+  font:500 13px/1.4 var(--font-body);
+  color:var(--ink-3);font-style:normal;
+  margin-top:var(--space-2);
+}
+
+/* ===== bottom nav ===== */
+.bottom-nav{
+  display:flex;background:var(--surface-card);
+  border:1px solid var(--ink-4);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-2);
+  padding:var(--space-2);gap:var(--space-1);
+  width:100%;max-width:480px;margin:var(--space-4) auto 0;
+}
+.bottom-nav button{
+  flex:1;min-height:56px;border:none;background:transparent;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  border-radius:var(--radius-sm);cursor:pointer;
+  font:500 11px/1 var(--font-body);color:var(--ink-2);
+}
+.bottom-nav button.active{color:var(--accent);background:var(--accent-soft)}
+.bottom-nav .icon{font-size:22px}
+
+/* ===== input ===== */
+.search-input{
+  width:100%;padding:14px 16px;border-radius:var(--radius-md);
+  border:1px solid var(--ink-4);background:var(--surface-card);
+  color:var(--ink-1);font:400 16px/1 var(--font-body);
+  min-height:52px;
+}
+.search-input:focus{outline:2px solid var(--accent);outline-offset:2px;border-color:var(--accent)}
+
+/* ===== chips ===== */
+.chips{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.chip{
+  font:500 13px/1 var(--font-body);
+  padding:8px 14px;border-radius:999px;
+  background:var(--surface-card);border:1px solid var(--ink-4);color:var(--ink-2);
+  cursor:pointer;min-height:36px;display:inline-flex;align-items:center;
+}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* page header */
+.page-header{
+  text-align:center;padding:var(--space-7) 0 var(--space-5);
+  border-bottom:1px solid var(--ink-4);margin-bottom:var(--space-6);
+}
+.page-header h1{font:700 40px/1.1 var(--font-display);margin:0 0 var(--space-2)}
+.page-header p{color:var(--ink-2);max-width:540px;margin:0 auto;font-size:15px}
+
+a{color:var(--accent);text-decoration:none}
+a:hover{color:var(--accent-hover);text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="preview-wrap">
+
+<header class="page-header">
+  <h1>Piosenka z tekstem — design preview</h1>
+  <p>Color tokens, type scale, key components. Light + dark side-by-side. Mock data.</p>
+</header>
+
+<!-- ============== COLOR SWATCHES ============== -->
+<h2 class="section-title">Color tokens</h2>
+<div class="theme-row">
+  <div class="theme-frame">
+    <p class="theme-label">Light</p>
+    <div class="swatches">
+      <div class="swatch" style="background:#faf7f1;color:#1a1816"><span class="name">paper</span><span class="hex">#faf7f1</span></div>
+      <div class="swatch" style="background:#ffffff;color:#1a1816"><span class="name">card</span><span class="hex">#ffffff</span></div>
+      <div class="swatch" style="background:#f0ece4;color:#1a1816"><span class="name">sunken</span><span class="hex">#f0ece4</span></div>
+      <div class="swatch" style="background:#1a1816;color:#faf7f1;border-color:#1a1816"><span class="name">ink-1</span><span class="hex">#1a1816</span></div>
+      <div class="swatch" style="background:#4a4540;color:#faf7f1;border-color:#4a4540"><span class="name">ink-2</span><span class="hex">#4a4540</span></div>
+      <div class="swatch" style="background:#847d74;color:#faf7f1;border-color:#847d74"><span class="name">ink-3</span><span class="hex">#847d74</span></div>
+      <div class="swatch" style="background:#c9c2b8;color:#1a1816"><span class="name">ink-4</span><span class="hex">#c9c2b8</span></div>
+      <div class="swatch" style="background:#8b1e2d;color:#fff;border-color:#8b1e2d"><span class="name">accent</span><span class="hex">#8b1e2d</span></div>
+      <div class="swatch" style="background:#f4e6e3;color:#8b1e2d"><span class="name">accent-soft</span><span class="hex">#f4e6e3</span></div>
+      <div class="swatch" style="background:#2c5f7a;color:#fff;border-color:#2c5f7a"><span class="name">chord</span><span class="hex">#2c5f7a</span></div>
+    </div>
+  </div>
+
+  <div class="theme-frame" data-theme="dark" style="background:#161412;color:#f0eae0;border-color:#3d3833">
+    <p class="theme-label" style="color:#847d74">Dark</p>
+    <div class="swatches">
+      <div class="swatch" style="background:#161412;color:#f0eae0;border-color:#3d3833"><span class="name">paper</span><span class="hex">#161412</span></div>
+      <div class="swatch" style="background:#1f1c19;color:#f0eae0;border-color:#3d3833"><span class="name">card</span><span class="hex">#1f1c19</span></div>
+      <div class="swatch" style="background:#0e0c0b;color:#f0eae0;border-color:#3d3833"><span class="name">sunken</span><span class="hex">#0e0c0b</span></div>
+      <div class="swatch" style="background:#f0eae0;color:#161412;border-color:#f0eae0"><span class="name">ink-1</span><span class="hex">#f0eae0</span></div>
+      <div class="swatch" style="background:#b8afa3;color:#161412;border-color:#b8afa3"><span class="name">ink-2</span><span class="hex">#b8afa3</span></div>
+      <div class="swatch" style="background:#847d74;color:#161412;border-color:#847d74"><span class="name">ink-3</span><span class="hex">#847d74</span></div>
+      <div class="swatch" style="background:#3d3833;color:#f0eae0;border-color:#3d3833"><span class="name">ink-4</span><span class="hex">#3d3833</span></div>
+      <div class="swatch" style="background:#d97181;color:#161412;border-color:#d97181"><span class="name">accent</span><span class="hex">#d97181</span></div>
+      <div class="swatch" style="background:#2a1a1d;color:#d97181;border-color:#3d3833"><span class="name">accent-soft</span><span class="hex">#2a1a1d</span></div>
+      <div class="swatch" style="background:#7fb3c8;color:#161412;border-color:#7fb3c8"><span class="name">chord</span><span class="hex">#7fb3c8</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== TYPOGRAPHY ============== -->
+<h2 class="section-title">Typography — Crimson Pro (display+lyric) · Inter (UI) · JetBrains Mono (chord)</h2>
+<div class="theme-frame" style="padding:var(--space-6) var(--space-5)">
+  <div class="type-row">
+    <div class="type-meta">Display 56 · Crimson Pro 700</div>
+    <p class="t-display">1788</p>
+  </div>
+  <div class="type-row">
+    <div class="type-meta">H1 40 · Crimson Pro 700</div>
+    <p class="t-h1">Pan Podbipięta</p>
+  </div>
+  <div class="type-row">
+    <div class="type-meta">H2 28 · Crimson Pro 600</div>
+    <p class="t-h2">Najnowsze opracowania</p>
+  </div>
+  <div class="type-row">
+    <div class="type-meta">H3 20 · Inter 600</div>
+    <p class="t-h3">Jacek Kaczmarski</p>
+  </div>
+  <div class="type-row">
+    <div class="type-meta">Body 18 · Inter 400</div>
+    <p class="t-body">Strona poświęcona piosence literackiej. Artykuły, relacje z koncertów i opracowania piosenek.</p>
+  </div>
+  <div class="type-row">
+    <div class="type-meta">Lyric 20 · Crimson Pro 400</div>
+    <p class="t-lyric">Ta pierwsza morska podróż do Australii! Łotry przy burtach, prostytutki w kojach&nbsp;–</p>
+  </div>
+  <div class="type-row">
+    <div class="type-meta">Chord 14 · JetBrains Mono 600</div>
+    <p><span class="t-chord">D&nbsp;&nbsp;G&nbsp;&nbsp;A&nbsp;&nbsp;h&nbsp;&nbsp;e&nbsp;&nbsp;fis</span></p>
+  </div>
+  <div class="type-row" style="border-bottom:none">
+    <div class="type-meta">Caption 14 · Inter 400 · ink-3</div>
+    <p class="t-caption">Tekst i muzyka: Jacek Kaczmarski · 1985</p>
+  </div>
+</div>
+
+<!-- ============== SONG READER MOCK — LIGHT + DARK ============== -->
+<h2 class="section-title">Song reader — sticky chord bar + new lyric line layout</h2>
+<div class="theme-row">
+  <div class="theme-frame">
+    <p class="theme-label">Light</p>
+    <div class="app-bar">
+      <button class="back" aria-label="Wstecz">←</button>
+      <div class="crumb">Kaczmarski · <b>1788</b></div>
+    </div>
+    <div class="song-mock">
+      <h1>1788</h1>
+      <p class="meta">Tekst &amp; muzyka <b>Jacek Kaczmarski</b> · Kapodaster <b>III</b></p>
+      <div class="stanza">
+        <p class="lyric-line"><span>Ta pierwsza morska podróż do Australii!</span><span class="chords">D &nbsp; G</span></p>
+        <p class="lyric-line"><span>Łotry przy burtach, prostytutki w&nbsp;kojach –</span><span class="chords">D &nbsp; A</span></p>
+        <p class="lyric-line"><span>Wszyscy się bali, łkali i&nbsp;rzygali</span><span class="chords">D &nbsp; G</span></p>
+        <p class="lyric-line"><span>W&nbsp;drodze do raju. Przewrotności Twoja,</span><span class="chords">D &nbsp; A</span></p>
+        <p class="lyric-line"><span>Panie, coś w&nbsp;jeszcze nam nieznanych planach</span><span class="chords">h &nbsp; e</span></p>
+        <p class="lyric-line"><span>Miał czarne diabły strzegące wybrzeży</span><span class="chords">h &nbsp; fis</span></p>
+        <p class="lyric-line"><span>Edenu, który przeznaczyłeś dla&nbsp;nas,</span><span class="chords">G &nbsp; A &nbsp; D</span></p>
+        <p class="lyric-line"><span>A&nbsp;w&nbsp;który nikt, prawdę mówiąc, nie&nbsp;wierzył!</span><span class="chords">G &nbsp; A &nbsp; h</span></p>
+      </div>
+      <div class="stanza">
+        <p class="lyric-line"><span>Czym żeśmy, marni, zasłużyli na&nbsp;to?</span><span class="chords">D &nbsp; G</span></p>
+        <p class="lyric-line"><span>Ten, co zawisnąć miał za&nbsp;kradzież płaszcza –</span><span class="chords">D &nbsp; A</span></p>
+        <p class="lyric-line"><span>Płakał nad swoją niechybną zatratą;</span><span class="chords">D &nbsp; G</span></p>
+      </div>
+    </div>
+    <div class="chord-bar">
+      <div class="group">
+        <button title="półton w górę">⏶</button>
+        <button title="oryginał">⌂</button>
+        <button title="półton w dół">⏷</button>
+      </div>
+      <div class="group">
+        <button class="active" title="akordy">♫</button>
+        <button title="tylko tekst">A</button>
+      </div>
+      <div class="group">
+        <button title="tryb występu">⛶</button>
+        <button title="ciemny">🌓</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="theme-frame" data-theme="dark" style="background:#161412;color:#f0eae0;border-color:#3d3833">
+    <p class="theme-label" style="color:#847d74">Dark</p>
+    <div class="app-bar" style="background:#1f1c19;border-color:#3d3833">
+      <button class="back" aria-label="Wstecz" style="color:#f0eae0">←</button>
+      <div class="crumb" style="color:#b8afa3">Kaczmarski · <b style="color:#f0eae0">1788</b></div>
+    </div>
+    <div class="song-mock" style="background:#1f1c19;border-color:#3d3833">
+      <h1 style="color:#f0eae0">1788</h1>
+      <p class="meta" style="color:#b8afa3">Tekst &amp; muzyka <b style="color:#f0eae0">Jacek Kaczmarski</b> · Kapodaster <b style="color:#f0eae0">III</b></p>
+      <div class="stanza">
+        <p class="lyric-line" style="color:#f0eae0"><span>Ta pierwsza morska podróż do Australii!</span><span class="chords" style="color:#7fb3c8">D &nbsp; G</span></p>
+        <p class="lyric-line" style="color:#f0eae0"><span>Łotry przy burtach, prostytutki w&nbsp;kojach –</span><span class="chords" style="color:#7fb3c8">D &nbsp; A</span></p>
+        <p class="lyric-line" style="color:#f0eae0"><span>Wszyscy się bali, łkali i&nbsp;rzygali</span><span class="chords" style="color:#7fb3c8">D &nbsp; G</span></p>
+        <p class="lyric-line" style="color:#f0eae0"><span>W&nbsp;drodze do raju. Przewrotności Twoja,</span><span class="chords" style="color:#7fb3c8">D &nbsp; A</span></p>
+        <p class="lyric-line" style="color:#f0eae0"><span>Panie, coś w&nbsp;jeszcze nam nieznanych planach</span><span class="chords" style="color:#7fb3c8">h &nbsp; e</span></p>
+        <p class="lyric-line" style="color:#f0eae0"><span>Miał czarne diabły strzegące wybrzeży</span><span class="chords" style="color:#7fb3c8">h &nbsp; fis</span></p>
+        <p class="lyric-line" style="color:#f0eae0"><span>Edenu, który przeznaczyłeś dla&nbsp;nas,</span><span class="chords" style="color:#7fb3c8">G &nbsp; A &nbsp; D</span></p>
+        <p class="lyric-line" style="color:#f0eae0"><span>A&nbsp;w&nbsp;który nikt, prawdę mówiąc, nie&nbsp;wierzył!</span><span class="chords" style="color:#7fb3c8">G &nbsp; A &nbsp; h</span></p>
+      </div>
+      <div class="stanza">
+        <p class="lyric-line" style="color:#f0eae0"><span>Czym żeśmy, marni, zasłużyli na&nbsp;to?</span><span class="chords" style="color:#7fb3c8">D &nbsp; G</span></p>
+        <p class="lyric-line" style="color:#f0eae0"><span>Ten, co zawisnąć miał za&nbsp;kradzież płaszcza –</span><span class="chords" style="color:#7fb3c8">D &nbsp; A</span></p>
+        <p class="lyric-line" style="color:#f0eae0"><span>Płakał nad swoją niechybną zatratą;</span><span class="chords" style="color:#7fb3c8">D &nbsp; G</span></p>
+      </div>
+    </div>
+    <div class="chord-bar" style="background:#1f1c19;border-color:#3d3833">
+      <div class="group" style="border-color:#3d3833">
+        <button title="półton w górę" style="color:#f0eae0">⏶</button>
+        <button title="oryginał" style="color:#f0eae0">⌂</button>
+        <button title="półton w dół" style="color:#f0eae0">⏷</button>
+      </div>
+      <div class="group" style="border-color:#3d3833">
+        <button class="active" title="akordy" style="background:#d97181;color:#161412">♫</button>
+        <button title="tylko tekst" style="color:#f0eae0">A</button>
+      </div>
+      <div class="group" style="border-color:#3d3833">
+        <button title="tryb występu" style="color:#f0eae0">⛶</button>
+        <button title="ciemny" style="color:#f0eae0">🌓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== COMPONENTS ============== -->
+<h2 class="section-title">Components — buttons / chips / search / quote</h2>
+<div class="theme-frame">
+  <div class="btn-row" style="margin-bottom:var(--space-4)">
+    <button class="btn btn-primary">Czytaj opracowanie</button>
+    <button class="btn btn-secondary">Zapisz offline</button>
+    <button class="btn btn-ghost">Udostępnij</button>
+  </div>
+
+  <div style="margin-bottom:var(--space-4)">
+    <input class="search-input" placeholder="Jałta, Rublow, Epitafium dla…" />
+  </div>
+
+  <div class="chips" style="margin-bottom:var(--space-4)">
+    <button class="chip active">Wszyscy</button>
+    <button class="chip">Polscy</button>
+    <button class="chip">Tłumaczenia</button>
+    <button class="chip">Współcześni</button>
+    <button class="chip">A–M</button>
+    <button class="chip">N–Z</button>
+  </div>
+
+  <blockquote class="lit-quote">
+    Tylko się pierwszy raz daj objąć / A&nbsp;niech już sobie krytyk kracze!
+    <small>Jacek Kaczmarski — Do muzy suplikacja przy ostrzeniu pióra</small>
+  </blockquote>
+
+  <div class="bottom-nav">
+    <button><span class="icon">☰</span><span>Menu</span></button>
+    <button class="active"><span class="icon">🔍</span><span>Szukaj</span></button>
+    <button><span class="icon">⭐</span><span>Zapisane</span></button>
+    <button><span class="icon">🌓</span><span>Tryb</span></button>
+  </div>
+</div>
+
+<!-- ============== SONGBOOK GRID ============== -->
+<h2 class="section-title">Songbook grid — artist tiles</h2>
+<div class="theme-frame">
+  <div class="tile-grid">
+    <div class="artist-tile">
+      <div class="photo">JK</div>
+      <div class="body"><p class="name">Jacek Kaczmarski</p><p class="count">246 piosenek</p></div>
+    </div>
+    <div class="artist-tile">
+      <div class="photo">PG</div>
+      <div class="body"><p class="name">Przemysław Gintrowski</p><p class="count">38 piosenek</p></div>
+    </div>
+    <div class="artist-tile">
+      <div class="photo">JN</div>
+      <div class="body"><p class="name">Jaromír Nohavica</p><p class="count">22 piosenki</p></div>
+    </div>
+    <div class="artist-tile">
+      <div class="photo">LL</div>
+      <div class="body"><p class="name">Lluís Llach</p><p class="count">7 piosenek</p></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

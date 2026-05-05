@@ -21,10 +21,26 @@
     <link href="{% static "css/lightbox.css" %}" rel="stylesheet" type="text/css" />
     <link href="{% static "css/search.css" %}" rel="stylesheet" type="text/css" />
     <link href="{% static "css/song.css" %}" rel="stylesheet" type="text/css" />
+    <link href="{% static "css/songbook.css" %}" rel="stylesheet" type="text/css" />
     <link href="{% static "css/style.css" %}" rel="stylesheet" type="text/css" />
     {% endcompress %}
 
     {% block extra-css %}{% endblock extra-css %}
+
+    <script>
+      // Anti-flash: apply view-songbook class before paint so reordered/hidden
+      // content does not jump. Stored in localStorage by songbook.js.
+      (function () {
+        try {
+          var raw = window.localStorage.getItem("mojaPiosenkaSongbook");
+          if (!raw) return;
+          var data = JSON.parse(raw);
+          if (data && data.preferences && data.preferences.view === "songbook") {
+            document.documentElement.classList.add("view-songbook");
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
 
   <body class="pzt">
@@ -48,6 +64,18 @@
         <ul class="nav navbar-nav">
           <li><a href="/" title="Strona główna"><span>Strona główna</span></a></li>
           <li><a href="/spiewnik/" title="Śpiewnik"><span>Piosenki</span></a></li>
+          <li><a href="/ustawienia/" title="Ustawienia"><span>Ustawienia</span></a></li>
+          <li>
+            <button type="button"
+                    class="songbook-view-toggle"
+                    role="switch"
+                    aria-checked="false"
+                    data-songbook-view-toggle
+                    title="Pokaż tylko piosenki z mojego śpiewnika">
+              <span class="songbook-view-toggle__glyph" aria-hidden="true">♥</span>
+              <span class="songbook-view-toggle__label">Mój śpiewnik</span>
+            </button>
+          </li>
         </ul>
         <div class="navbar-right search pzt-expanded-navbar-search">
           <input type="text" class="form-control" placeholder="Jałta, Rublow, Epitafium dla ...">
@@ -94,6 +122,7 @@
     <script src="{% static "js/lightbox.js" %}"></script>
     <script src="{% static "js/search.js" %}"></script>
     <script src="{% static "js/song.js" %}"></script>
+    <script src="{% static "js/songbook.js" %}"></script>
     <script src="{% static "js/tooltips.js" %}"></script>
     {% endcompress %}
 

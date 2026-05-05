@@ -12,7 +12,19 @@
     <div class="col-md-8">
       <div class="section">
         <div class="content">
-          <h1>{{ title }}</h1>
+          <div class="song-title-row">
+            <h1>{{ title }}</h1>
+            <button type="button"
+                    class="song-heart-button"
+                    data-songbook-heart
+                    data-song-slug="{{ slug }}"
+                    data-song-title="{{ title }}"
+                    aria-pressed="false"
+                    aria-label="Dodaj „{{ title }}” do mojego śpiewnika">
+              <span class="song-heart-button__glyph" aria-hidden="true"></span>
+              <span class="song-heart-button__label">Dodaj do śpiewnika</span>
+            </button>
+          </div>
 
           <div class="row song-header">
             <div class="col-md-6">

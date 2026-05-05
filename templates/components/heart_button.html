@@ -1,0 +1,10 @@
+{# Heart toggle button. Required: slug. Optional: title (for aria-label). #}
+<button type="button"
+        class="song-heart-button"
+        aria-pressed="false"
+        data-songbook-heart
+        data-song-slug="{{ slug }}"
+        aria-label="Dodaj do mojego śpiewnika">
+  <span class="song-heart-button__glyph" aria-hidden="true"></span>
+  <span class="song-heart-button__label">W śpiewniku</span>
+</button>

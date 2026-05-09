@@ -1,14 +1,5 @@
-<span class="glyphicon glyphicon-calendar"></span>
-{% if event.datetime %}
-{{ event.datetime|date:"d.m.Y" }}, 
-{% endif %}
-
-{% if event.starts_on %}
-{{ event.starts_on|date:"d.m.Y" }}, 
-{% endif %}
-
-{% if event.location %}
-<b>{{ event.location }}</b>
-{% endif %}
-
+{% include 'components/icon.html' with type='calendar' %}
+{% if event.datetime %}{{ event.datetime|date:"d.m.Y" }}, {% endif %}
+{% if event.starts_on %}{{ event.starts_on|date:"d.m.Y" }}, {% endif %}
+{% if event.location %}<b>{{ event.location }}</b>{% endif %}
 {% include "components/external_link.html" with url=event.get_absolute_url name=event %}

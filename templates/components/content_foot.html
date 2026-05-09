@@ -1,6 +1,4 @@
-<hr />
-<p class="remove-bottom-margin">
-  Dodane
-  {% if pub_date %}<span class="date">{{ pub_date|date:"d.m.Y" }}</span>{% endif %}
+<p class="content-foot">
+  Dodane{% if pub_date %} <span class="date">{{ pub_date|date:"d.m.Y" }}</span>{% endif %}
   przez <b>{{ author }}</b>
 </p>

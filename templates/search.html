@@ -2,48 +2,25 @@
 {% load static %}
 
 {% block title %}Szukaj{% endblock %}
-{% block description %}Opis strony internetowej Piosenka z tekstem{% endblock description %}
+{% block description %}Wyszukiwarka piosenek i artystów w serwisie Piosenka z tekstem.{% endblock description %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-8">
-      <div class="section">
-        <h2 class="pzt-card-title">Szukaj</h2>
-        <p>
-          Ewentualne reklamy wyświetlane poniżej są niezależne
-          od serwisu Piosenka z tekstem. Nie mamy możliwości ich
-          wyłączenia i nie przynoszą one naszej stronie przychodu.
-        </p>
-        <div class="content">
-          <div>
-            <script>
-              (function () {
-                var cx = '017245285351694702152:psiepzvmq98';
-                var gcse = document.createElement('script');
-                gcse.type = 'text/javascript';
-                gcse.async = true;
-                gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
-                var s = document.getElementsByTagName('script')[0];
-                s.parentNode.insertBefore(gcse, s);
-              })();
-            </script>
-            <gcse:search> </gcse:search>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="section">
-        <h2 class="pzt-card-title">Nie znaleziono?</h2>
-        <p>
-          Szukasz informacji o konkretnym <b>utworze</b>? Zajrzyj do <a href="/spiewnik/">śpiewnika</a>.
-        </p>
-      </div>
-    </div>
+<div class="pzt-container">
+  <div class="section-card" style="max-width:680px;margin:0 auto">
+    <h2 class="card-title">Szukaj</h2>
+    <p>
+      Pełnotekstowa wyszukiwarka działa po naciśnięciu przycisku poniżej
+      lub skrótu <kbd>⌘ K</kbd> / <kbd>Ctrl K</kbd> w dowolnym miejscu strony.
+    </p>
+    <p>
+      <button type="button" class="btn btn-primary" data-pzt-search-trigger>
+        <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-search"/></svg>
+        Otwórz wyszukiwarkę
+      </button>
+    </p>
+    <p style="color:var(--color-ink-3);font-size:14px;margin-top:18px">
+      Indeks budowany przy każdym wdrożeniu, lokalnie, bez Google.
+    </p>
   </div>
-
 </div>
 {% endblock content %}

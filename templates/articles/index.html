@@ -1,30 +1,27 @@
 {% extends "base.html" %}
 
-{% load list_partition %}
-
 {% block title %}Artykuły{% endblock %}
 
 {% block content %}
-<div class="container">
-  {% for row in articles|columns_horizontal:"3" %}
-  <div class="row">
-    {% for article in row %}
-    <div class="col-md-4">
-      <div class="section">
-        <a href="{{article.get_absolute_url}}">
-          <div class="thumbnail-host">
-            <img src="{{article.thumb_url}}" class="pzt-article-thumb" />
-            <div class="thumbnail-caption">
-              <h2>{{article.title}}
-              </h2>
-            </div>
-          </div>
-        </a>
+<div class="pzt-container">
+  <section class="card-grid">
+    {% for article in articles %}
+    <a href="{{ article.get_absolute_url }}" class="block section-card" style="padding:0;text-decoration:none;overflow:hidden">
+      <div class="thumbnail-host">
+        {% if article.thumb_picture %}
+        {% include "components/responsive_image.html" with ri=article.thumb_picture.ri fallback_src=article.thumb_picture.fallback_src alt=article.title sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw" width=article.thumb_picture.width height=article.thumb_picture.height css_class="pzt-article-thumb" %}
+        {% else %}
+        <img src="{{ article.thumb_url }}" class="pzt-article-thumb" alt="" loading="lazy" decoding="async" />
+        {% endif %}
+        <div class="thumbnail-caption">
+          <h2>{{ article.title }}</h2>
+        </div>
+      </div>
+      <div class="prose-pzt" style="padding:14px 16px">
         {{ article.lead_html|safe }}
       </div>
-    </div>
+    </a>
     {% endfor %}
-  </div>
-  {% endfor %}
+  </section>
 </div>
 {% endblock content %}

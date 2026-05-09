@@ -1,33 +1,60 @@
 {% extends "songs/base.html" %}
+{% load static %}
 
-{% load thumbnail %}
-{% load list_partition %}
+{% block title %}Śpiewnik - piosenka literacka{% endblock title %}
+{% block description %}Śpiewnik piosenki literackiej: opracowania, teksty i akordy. Twórcy polscy, zagraniczni i środowisko piosenki literackiej.{% endblock description %}
 
-{% block title %}Piosenki{% endblock title %}
-{% block description %}Śpiewnik, opracowania i interpretacje piosenek.{% endblock description %}
+{% block page-hero %}{% endblock page-hero %}
 
 {% block content %}
-<div class="container">
-  {% for row in hero_artists|columns_horizontal:"3" %}
-  <div class="row">
-    {% for artist in row %}
-    <div class="col-md-4">
-      <div class="section">
-        <a href="{{artist.get_absolute_url}}">
-          <div class="thumbnail-host">
-            <img src="{{artist.image_thumb}}" class="pzt-article-thumb" />
-            <div class="thumbnail-caption">
-              <h2>{{artist.name}}
-              </h2>
-            </div>
-          </div>
-        </a>
-      </div>
+<div class="pzt-container pzt-songbook">
+  <header class="pzt-songbook-header">
+    <h1>Śpiewnik</h1>
+    <p>Twórcy piosenki literackiej. Stuknij w&nbsp;portret, żeby przejść do opracowań.</p>
+    <button type="button" class="pzt-search-input pzt-songbook-search-trigger" data-pzt-search-trigger aria-label="Otwórz wyszukiwarkę">
+      <svg aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-search"/></svg>
+      <span>Szukaj artysty lub piosenki&hellip;</span>
+      <span class="pzt-palette-kbd"><kbd>⌘K</kbd></span>
+    </button>
+    <div class="pzt-filter-chips" role="group" aria-label="Filtruj">
+      <button type="button" class="pzt-chip is-active" data-filter="all">Wszyscy</button>
+      <button type="button" class="pzt-chip" data-filter="polski">Polscy</button>
+      <button type="button" class="pzt-chip" data-filter="tlumaczenie">Tłumaczenia</button>
+      <button type="button" class="pzt-chip" data-filter="wspolczesny">Współcześni</button>
     </div>
-    {% endfor %}
-  </div>
-  {% endfor %}
+  </header>
 
-  {% include "songs/menu.html" %}
+  <div class="pzt-songbook-layout">
+    <div class="pzt-songbook-grid-wrap" data-pzt-songbook-grid>
+      {% for group in artist_groups %}
+      <h2 id="letter-{{ group.anchor }}" class="pzt-letter-heading">{{ group.letter }}</h2>
+      <ul class="pzt-artist-grid list-clean">
+        {% for artist in group.artists %}
+        <li class="pzt-artist-tile-li" data-tags="{{ artist.filter_tags }}">
+          <a href="{{ artist.get_absolute_url }}" class="pzt-artist-tile">
+            <div class="pzt-artist-tile-media">
+              {% if artist.portrait_picture %}
+              {% include "components/responsive_image.html" with ri=artist.portrait_picture.ri fallback_src=artist.portrait_picture.fallback_src alt=artist.name sizes="(max-width: 600px) 50vw, (max-width: 1024px) 33vw, 22vw" width=artist.portrait_picture.width height=artist.portrait_picture.height css_class="pzt-artist-tile-img" %}
+              {% else %}
+              <div class="pzt-artist-tile-placeholder">{{ artist.name|slice:":1" }}</div>
+              {% endif %}
+            </div>
+            <div class="pzt-artist-tile-body">
+              <h3 class="pzt-artist-tile-name">{{ artist.name }}</h3>
+              {% if artist.song_count %}<p class="pzt-artist-tile-count">{{ artist.song_count }} {% if artist.song_count == 1 %}piosenka{% elif artist.song_count < 5 %}piosenki{% else %}piosenek{% endif %}</p>{% endif %}
+            </div>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endfor %}
+    </div>
+
+    <nav class="pzt-jumplist" aria-label="Skok do litery">
+      {% for jl in jump_letters %}
+      <a href="#letter-{{ jl.anchor }}" class="pzt-jumplist-letter">{{ jl.letter }}</a>
+      {% endfor %}
+    </nav>
+  </div>
 </div>
 {% endblock content %}

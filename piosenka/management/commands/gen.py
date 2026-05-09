@@ -11,6 +11,7 @@ from markdown2 import markdown
 import re
 
 from piosenka import lyrics
+from piosenka import imageutils
 
 PAGES = {
     "o-stronie": "page.html",
@@ -179,6 +180,15 @@ def generate_404_page():
     write_page(context, "404.html", out_file_path)
 
 
+def generate_saved_page():
+    """Stub page for /zapisane/ — empty state today, populated by client-side JS later."""
+    context = {}
+    out_dir = os.path.join(OUT_DIR_PATH, "zapisane")
+    os.makedirs(out_dir, exist_ok=True)
+    out_file_path = os.path.join(out_dir, "index.html")
+    write_page(context, "saved.html", out_file_path)
+
+
 def generate_pages():
     for page, template in PAGES.items():
         src_path = os.path.join(CONTENT_PATH, page, "index.md")
@@ -212,6 +222,17 @@ def generate_articles():
         article_slug = os.path.relpath(subdir, article_dir_path).strip("/")
         article_context["get_absolute_url"] = f"/artykuly/{article_slug}/"
         article_context["thumb_url"] = frontmatter_data.get("cover_image_thumb_420_210")
+        thumb_source = (
+            frontmatter_data.get("cover_image_thumb_600_300")
+            or frontmatter_data.get("cover_image_thumb_420_210")
+        )
+        article_context["thumb_picture"] = (
+            imageutils.picture_context(
+                thumb_source,
+                alt="",
+                sizes="(max-width: 600px) 100vw, (max-width: 1024px) 66vw, 800px",
+            ) if thumb_source else None
+        )
 
         if article_context["lead"]:
             article_context["lead_html"] = markdown(article_context["lead"])
@@ -272,13 +293,35 @@ def parse_artists():
         frontmatter_data, content = parse_file(index_md_path)
         artist_slug = os.path.relpath(subdir, ARTISTS_DIR_PATH).strip("/")
         artist = make_context_for_page(frontmatter_data, section="songs")
+        artist["slug"] = artist_slug
         artist["get_absolute_url"] = f"/spiewnik/{artist_slug}/"
+        # Square portrait variants for tiles + hero portraits.
+        portrait_url = artist.get("image_full") or artist.get("image_thumb")
+        artist["portrait_picture"] = (
+            imageutils.picture_context(
+                portrait_url,
+                alt=artist.get("name") or "",
+                sizes="(max-width: 600px) 50vw, (max-width: 1024px) 33vw, 25vw",
+                square=True,
+                css_class="pzt-artist-tile-img",
+            ) if portrait_url else None
+        )
+        artist["hero_picture"] = (
+            imageutils.picture_context(
+                portrait_url,
+                alt=artist.get("name") or "",
+                sizes="(max-width: 600px) 60vw, (max-width: 1024px) 280px, 320px",
+                square=True,
+                css_class="pzt-artist-hero-img",
+            ) if portrait_url else None
+        )
         artists_by_slug[artist_slug] = artist
     return artists_by_slug
 
 
 def generate_songs(artists_by_slug):
     songs_by_artist_slug = {}
+    pending = []  # list of (context, out_file_path) to write after computing prev/next
 
     songs_dir_path = os.path.join(CONTENT_PATH, SONGS_DIR)
     song_notes = []
@@ -295,6 +338,7 @@ def generate_songs(artists_by_slug):
 
         content_html = lyrics.render_lyrics(content)
         context = make_context_for_page(frontmatter_data, section="songs")
+        context["slug"] = song_slug
         context["content_html"] = content_html
         context["get_absolute_url"] = f"/opracowanie/{song_slug}/"
         artist_slugs = set(
@@ -303,6 +347,8 @@ def generate_songs(artists_by_slug):
             + (context["translators"] if context["translators"] else [])
             + (context["performers"] if context["performers"] else [])
         )
+        # Track raw artist slug list for prev/next ordering decisions later.
+        context["_artist_slugs"] = list(artist_slugs)
         for artist_slug in artist_slugs:
             if artist_slug not in songs_by_artist_slug:
                 songs_by_artist_slug[artist_slug] = []
@@ -330,17 +376,54 @@ def generate_songs(artists_by_slug):
                 )
                 note_context["content_html"] = note_content_html
                 note_context["song"] = context
+                if note_context.get("image_thumb"):
+                    note_context["thumb_picture"] = imageutils.picture_context(
+                        note_context.get("image_full") or note_context["image_thumb"],
+                        alt=note_context.get("title") or "",
+                        sizes="(max-width: 600px) 100vw, (max-width: 1024px) 320px, 320px",
+                    )
                 notes.append(note_context)
 
         context["notes"] = notes
         context["num_notes"] = len(notes)
+        pending.append((context, out_file_path))
+        song_notes += notes
+
+    # Compute prev/next URL for each song using the first artist's sorted song list.
+    # Falls back to global chronological order (by pub_date desc) when no artist list helps.
+    sorted_by_artist = {}
+    for artist_slug, songs in songs_by_artist_slug.items():
+        sorted_by_artist[artist_slug] = sorted(songs, key=polish_sort_key)
+
+    for context, out_file_path in pending:
+        prev_url = None
+        next_url = None
+        artist_slugs = context.get("_artist_slugs") or []
+        if artist_slugs:
+            primary = artist_slugs[0]
+            siblings = sorted_by_artist.get(primary, [])
+            try:
+                idx = next(
+                    i
+                    for i, s in enumerate(siblings)
+                    if s["get_absolute_url"] == context["get_absolute_url"]
+                )
+                if idx > 0:
+                    prev_url = siblings[idx - 1]["get_absolute_url"]
+                if idx < len(siblings) - 1:
+                    next_url = siblings[idx + 1]["get_absolute_url"]
+            except StopIteration:
+                pass
+        context["prev_song_url"] = prev_url
+        context["next_song_url"] = next_url
+        # Drop helper before render
+        context.pop("_artist_slugs", None)
         write_page(context, "songs/song.html", out_file_path)
 
-        song_notes += notes
     return songs_by_artist_slug, song_notes
 
 
-def generate_songbook_index(artists_by_slug):
+def generate_songbook_index(artists_by_slug, songs_by_artist_slug):
     hero_artists = [
         artists_by_slug["jacek-kaczmarski"],
         artists_by_slug["przemyslaw-gintrowski"],
@@ -353,9 +436,11 @@ def generate_songbook_index(artists_by_slug):
     polish_artists = []
     foreign_artists = []
     community_artists = []
+    all_featured = []
     for artist_slug, artist in artists_by_slug.items():
         if not artist["featured"]:
             continue
+        artist["song_count"] = len(songs_by_artist_slug.get(artist_slug, []))
 
         if artist["category"] == "POLISH":
             polish_artists.append(artist)
@@ -363,16 +448,59 @@ def generate_songbook_index(artists_by_slug):
             foreign_artists.append(artist)
         elif artist["category"] == "COMMUNITY":
             community_artists.append(artist)
+        all_featured.append(artist)
 
-    polish_artists.sort(key=lambda x: x["name"])
-    foreign_artists.sort(key=lambda x: x["name"])
-    community_artists.sort(key=lambda x: x["name"])
+    polish_artists.sort(key=lambda x: artist_sort_key(x["name"]))
+    foreign_artists.sort(key=lambda x: artist_sort_key(x["name"]))
+    community_artists.sort(key=lambda x: artist_sort_key(x["name"]))
+    all_featured.sort(key=lambda x: artist_sort_key(x["name"]))
+
+    # Compute jumplist letters and per-artist starting letter.
+    letters_present = []
+    seen_letters = set()
+    for artist in all_featured:
+        first = artist_first_letter(artist["name"])
+        artist["jump_letter"] = first
+        artist["jump_anchor"] = _slug_letter(first)
+        # data-tags string for client-side filter chips.
+        tags = []
+        cat = artist.get("category")
+        if cat == "POLISH":
+            tags.append("polski")
+        if cat == "FOREIGN":
+            tags.append("zagraniczny")
+        if cat == "COMMUNITY":
+            tags.append("wspolczesny")
+        # Heuristic: surviving artist => "wspolczesny"
+        if not artist.get("died_on"):
+            tags.append("wspolczesny")
+        # Translation artists land in foreign, mark them
+        if cat == "FOREIGN":
+            tags.append("tlumaczenie")
+        artist["filter_tags"] = " ".join(sorted(set(tags)))
+        if first not in seen_letters:
+            seen_letters.add(first)
+            letters_present.append(first)
+    letters_present.sort(key=letter_sort_key)
+    jump_letters = [{"letter": l, "anchor": _slug_letter(l)} for l in letters_present]
+
+    # Group artists for rendering with letter-anchored sections.
+    artist_groups_map = {}
+    for artist in all_featured:
+        artist_groups_map.setdefault(artist["jump_letter"], []).append(artist)
+    artist_groups = [
+        {"letter": l, "anchor": _slug_letter(l), "artists": artist_groups_map[l]}
+        for l in letters_present
+    ]
 
     song_index_context = {
         "hero_artists": hero_artists,
         "polish": polish_artists,
         "foreign": foreign_artists,
         "community": community_artists,
+        "all_artists": all_featured,
+        "artist_groups": artist_groups,
+        "jump_letters": jump_letters,
     }
     out_dir = os.path.join(OUT_DIR_PATH, ARTISTS_DIR)
     os.makedirs(out_dir, exist_ok=True)
@@ -391,6 +519,61 @@ def polish_sort_key(song):
     # Removes leading non-word chars: '„Obym się mylił”' -> 'Obym się mylił”'
     text_clean = re.sub(r'^[\s\W]+', '', text, flags=re.UNICODE)
     return text_clean.lower().translate(POLISH_ORDER)
+
+
+def artist_sort_key(name):
+    """Sort artists by surname when possible. Falls back to whole name."""
+    if not name:
+        return ""
+    # If multi-word, sort by last token then first token (common Polish convention).
+    parts = name.split()
+    if len(parts) >= 2:
+        key = parts[-1] + " " + " ".join(parts[:-1])
+    else:
+        key = name
+    return key.lower().translate(POLISH_ORDER)
+
+
+def artist_first_letter(name):
+    """Polish-aware first letter for jumplist grouping. Uses surname if multi-word."""
+    if not name:
+        return "?"
+    parts = name.split()
+    base = parts[-1] if len(parts) >= 2 else name
+    base = re.sub(r'^[\s\W]+', '', base, flags=re.UNICODE)
+    if not base:
+        return "?"
+    return base[0].upper()
+
+
+# Letter ordering for the alphabet rail — Polish letters get inserted after their base.
+LETTER_ORDER = list("AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ")
+LETTER_RANK = {ch: i for i, ch in enumerate(LETTER_ORDER)}
+
+def letter_sort_key(letter):
+    return LETTER_RANK.get(letter, 999)
+
+
+def _slug_letter(letter):
+    """A url-safe anchor id for a Polish letter (e.g., Ł -> l, Ż -> z2)."""
+    mapping = {
+        'A': 'a', 'Ą': 'a1', 'B': 'b', 'C': 'c', 'Ć': 'c1', 'D': 'd',
+        'E': 'e', 'Ę': 'e1', 'F': 'f', 'G': 'g', 'H': 'h', 'I': 'i',
+        'J': 'j', 'K': 'k', 'L': 'l', 'Ł': 'l1', 'M': 'm', 'N': 'n',
+        'Ń': 'n1', 'O': 'o', 'Ó': 'o1', 'P': 'p', 'Q': 'q', 'R': 'r',
+        'S': 's', 'Ś': 's1', 'T': 't', 'U': 'u', 'V': 'v', 'W': 'w',
+        'X': 'x', 'Y': 'y', 'Z': 'z', 'Ź': 'z1', 'Ż': 'z2',
+    }
+    return mapping.get(letter, letter.lower() if letter else 'misc')
+
+
+def song_first_letter(title):
+    if not title:
+        return "?"
+    text_clean = re.sub(r'^[\s\W]+', '', title, flags=re.UNICODE)
+    if not text_clean:
+        return "?"
+    return text_clean[0].upper()
 
 def generate_artists(artists_by_slug, songs_by_artist_slug, song_index_context):
     for artist_slug, artist_context in artists_by_slug.items():
@@ -411,6 +594,12 @@ def generate_artists(artists_by_slug, songs_by_artist_slug, song_index_context):
                     note_frontmatter_data, section="songs"
                 )
                 note_context["content_html"] = note_content_html
+                if note_context.get("image_thumb"):
+                    note_context["thumb_picture"] = imageutils.picture_context(
+                        note_context.get("image_full") or note_context["image_thumb"],
+                        alt=note_context.get("title") or "",
+                        sizes="(max-width: 600px) 100vw, (max-width: 1024px) 320px, 320px",
+                    )
                 notes.append(note_context)
         out_dir = os.path.join(OUT_DIR_PATH, os.path.relpath(subdir, CONTENT_PATH))
         os.makedirs(out_dir, exist_ok=True)
@@ -431,6 +620,20 @@ def generate_artists(artists_by_slug, songs_by_artist_slug, song_index_context):
 
         artist_context["songs"] = filtered_songs
         artist_context["epigone_songs"] = epigone_songs
+
+        # Group songs by first letter for the redesigned A-Z layout + jumplist.
+        groups_map = {}
+        for song in filtered_songs:
+            letter = song_first_letter(song["title"])
+            groups_map.setdefault(letter, []).append(song)
+        sorted_letters = sorted(groups_map.keys(), key=letter_sort_key)
+        artist_context["song_groups"] = [
+            {"letter": l, "anchor": _slug_letter(l), "songs": groups_map[l]}
+            for l in sorted_letters
+        ]
+        artist_context["song_letters"] = [
+            {"letter": l, "anchor": _slug_letter(l)} for l in sorted_letters
+        ]
 
         notes.sort(key=lambda x: x["pub_date"], reverse=True)
         artist_context["notes"] = notes
@@ -476,19 +679,31 @@ def generate_song_index(all_songs):
         json.dump(resp, f, ensure_ascii=False, indent=4)
 
 
+def attach_responsive_image(context, url_key, picture_key, alt="", sizes=None, square=False, css_class=""):
+    """Helper: read context[url_key], compute picture context, store under context[picture_key]."""
+    url = context.get(url_key)
+    if not url:
+        context[picture_key] = None
+        return
+    ctx = imageutils.picture_context(url, alt=alt, sizes=sizes, square=square, css_class=css_class)
+    context[picture_key] = ctx
+
+
 class Command(BaseCommand):
     help = "Generates the static pages."
 
     def handle(self, *args, **options):
+        imageutils.configure(OUT_DIR_PATH, ROOT_PATH)
         generate_pages()
         generate_404_page()
+        generate_saved_page()
 
         articles = generate_articles()
         articles.sort(key=lambda x: x["pub_date"], reverse=True)
         posts = generate_posts()
         artists_by_slug = parse_artists()
         songs_by_artist_slug, song_notes = generate_songs(artists_by_slug)
-        songbook_index_context = generate_songbook_index(artists_by_slug)
+        songbook_index_context = generate_songbook_index(artists_by_slug, songs_by_artist_slug)
         generate_artists(artists_by_slug, songs_by_artist_slug, songbook_index_context)
 
         all_songs = {}
@@ -500,18 +715,32 @@ class Command(BaseCommand):
 
         song_notes.sort(key=lambda x: x["pub_date"], reverse=True)
 
+        # Featured opracowanie = latest song-note pair. The note sits on a song.
+        featured_note = song_notes[0]
+        featured_song = featured_note["song"]
+        # If the featured song's first text-author has a portrait, prefer that
+        # for the hero image (more humane than the note thumbnail).
+        hero_picture = featured_note.get("thumb_picture")
+        author_artist = None
+        if featured_song.get("text_authors"):
+            author_artist = featured_song["text_authors"][0]
+        elif featured_song.get("performers"):
+            author_artist = featured_song["performers"][0]
+        if author_artist and author_artist.get("hero_picture"):
+            hero_picture = author_artist["hero_picture"]
+
         frontpage_context = {
             "post": posts[0],
-            "note": song_notes[0],
-            "songs": all_songs[:10],
-            "notes": song_notes[:10],
+            "posts": posts[:3],
+            "featured_note": featured_note,
+            "featured_song": featured_song,
+            "featured_artist": author_artist,
+            "hero_picture": hero_picture,
+            "latest_notes": song_notes[:5],
+            "songs": all_songs[:5],
             "article": articles[0],
         }
 
-        private_gen_vars_path = os.path.join(ROOT_PATH, "private_gen_vars.yaml")
-        with open(private_gen_vars_path, "r") as file:
-            private_gen_vars = yaml.safe_load(file)
-        frontpage_context["calendar_api_key"] = private_gen_vars["calendar_api_key"]
         out_file_path = os.path.join(OUT_DIR_PATH, "index.html")
         write_page(frontpage_context, "frontpage/index.html", out_file_path)
 

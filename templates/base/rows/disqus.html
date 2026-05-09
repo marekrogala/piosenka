@@ -1,20 +1,32 @@
-<div class="row hidden-print">
-  <div class="col-md-12">
-    <div id="disqus_thread"></div>
-    <script>
-      var disqus_shortname = 'piosenka';
-      {% if disqus_id %}
-      var disqus_identifier = '{{ disqus_id }}';
-      {% endif %}
-
-      /* * * DON'T EDIT BELOW THIS LINE * * */
-      (function() {
-       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-       dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
-       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-       })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-  </div>
+<div class="hidden-print" style="margin-top:32px">
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_shortname = 'piosenka';
+    {% if disqus_id %}
+    var disqus_identifier = '{{ disqus_id }}';
+    {% endif %}
+    (function() {
+      // Lazy-load Disqus when the thread approaches the viewport.
+      var thread = document.getElementById('disqus_thread');
+      if (!thread || !('IntersectionObserver' in window)) {
+        var dsq = document.createElement('script');
+        dsq.async = true;
+        dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+        document.head.appendChild(dsq);
+        return;
+      }
+      var io = new IntersectionObserver(function (entries, obs) {
+        if (entries.some(function (e) { return e.isIntersecting; })) {
+          var dsq = document.createElement('script');
+          dsq.async = true;
+          dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+          document.head.appendChild(dsq);
+          obs.disconnect();
+        }
+      }, { rootMargin: '300px' });
+      io.observe(thread);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="https://disqus.com" class="dsq-brlink" style="font-size:13px;color:var(--color-ink-3)">comments powered by <span class="logo-disqus">Disqus</span></a>
 </div>

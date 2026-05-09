@@ -1,99 +1,76 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-4">
-      <div class="section">
-        <!-- Featured blog post -->
-        <div class="content">
-          <h2 class="pzt-card-title">
-            {{ post.title }}
-          </h2>
-      
-          {{ post.content_html|safe }}
-          <p>
-            <a href="{{ post.get_absolute_url }}">Komentarze</a>.
-            <a href="/blog/">Więcej postów</a>.
-          </p>
-      
-          <hr />
-          <p class="remove-bottom-margin">
-            Dodany
-            <span class="date">{{ post.pub_date|date:"d.m.Y" }}</span>
-            przez <b>{{ post.author }}</b>
-          </p>
-        </div>
-      </div>
-      
-      <div class="section">
-        <h2 class="pzt-card-title">Ostatnie komentarze</h2>
-          <div id="last-comments"></div>
-      </div>
-      <div class="section">
-        <h2 class="pzt-card-title">Portale społecznościowe</h2>
-        <div class="pzt-social-button fb-page" data-href="https://www.facebook.com/piosenkaztekstem/" data-width="280" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="https://www.facebook.com/piosenkaztekstem/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/piosenkaztekstem/">Piosenka z tekstem</a></blockquote></div>
-      </div>
-    </div>
-    <div class="col-md-8">
-      <div class="section">
-        <div class="thumbnail-host">
-          <a href="{{ article.get_absolute_url }}">
-            <img src="{{ article.thumb_url }}" alt="Ilustracja artykułu {{ article.title }}" class="img-responsive pzt-max-width pzt-article-thumb" />
-            <div class="thumbnail-caption">
-              <p>{{ article.title }}</p>
-              <p>{{ article.lead_html|safe }}</p>
-            </div>
-          </a>
-        </div>
-      </div>
+{% block page-hero %}{% endblock page-hero %}
 
-      <div class="row">
-        <div class="col-md-6">
-          <div class="section">
-            <h2 class="pzt-card-title">Nadchodzące wydarzenia</h2>
-            <script>
-              const CALENDAR_API_KEY = "{{ calendar_api_key }}";
-            </script>
-            <ul class="list-unstyled" id="pzt-upcoming-events">
-              <li>...</li>
-            </ul>
-          </div>
-          <div class="section">
-            <h2 class="pzt-card-title">{{ note.title }}</h2>
-            {% if note.image_thumb %}
-            <div class="pzt-thumbnail thumbnail-host">
-              <img src="{{note.image_thumb}}" />
-            </div>
-            {% endif %}
-            {{ note.content_html|safe }}
-            <p style="text-align: right;"><a href="{{ note.song.get_absolute_url }}">{{ note.song.title }}</a></p>
-          </div>
-          
-        </div>
-        <div class="col-md-6">
-          <!-- New songs -->
-          <div class="section">
-            <h2 class="pzt-card-title">Nowe opracowania</h2>
-            <ul class="list-unstyled">
-              {% for song in songs %}
-              <li><a href="{{song.get_absolute_url}}">{{song.title}}</a></li>
-              {% endfor %}
-            </ul>
-          </div>
-          
-          <div class="section">
-            <h2 class="pzt-card-title">Nowe adnotacje</h2>
-            <ul class="list-unstyled">
-              {% for note in notes %}
-              <li><a href="{{note.song.get_absolute_url}}">{{note.title}}</a></li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-      </div>
+{% block content %}
+<div class="pzt-container pzt-home">
+  {% if featured_note %}
+  <a class="pzt-home-hero" href="{{ featured_song.get_absolute_url }}">
+    <div class="pzt-home-hero-media">
+      {% if hero_picture %}
+      {% include "components/responsive_image.html" with ri=hero_picture.ri fallback_src=hero_picture.fallback_src alt=hero_picture.alt sizes="(max-width: 600px) 100vw, (max-width: 1024px) 60vw, 720px" width=hero_picture.width height=hero_picture.height css_class="pzt-home-hero-img" loading="eager" %}
+      {% endif %}
     </div>
-  </div>
+    <div class="pzt-home-hero-body">
+      <p class="pzt-home-hero-eyebrow">Najnowsze opracowanie</p>
+      <h1 class="pzt-home-hero-title">{{ featured_song.title }}</h1>
+      {% if featured_artist %}
+      <p class="pzt-home-hero-artist">{{ featured_artist.name }}</p>
+      {% endif %}
+      <p class="pzt-home-hero-teaser">{{ featured_note.title }}</p>
+      <span class="btn btn-primary pzt-home-hero-cta">Czytaj opracowanie</span>
+    </div>
+  </a>
+  {% endif %}
+
+  <section class="pzt-home-section">
+    <div class="pzt-home-section-head">
+      <h2>Najnowsze opracowania</h2>
+      <a href="/spiewnik/" class="pzt-home-link-more">Wszystkie &rarr;</a>
+    </div>
+    <ul class="pzt-home-list list-clean">
+      {% for note in latest_notes %}
+      <li>
+        <a class="pzt-home-list-row" href="{{ note.song.get_absolute_url }}">
+          <span class="pzt-home-list-title">{{ note.song.title }}</span>
+          {% if note.song.text_authors %}
+          <span class="pzt-home-list-artist">{% for a in note.song.text_authors %}{{ a.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+          {% elif note.song.performers %}
+          <span class="pzt-home-list-artist">{% for a in note.song.performers %}{{ a.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+          {% endif %}
+          <span class="pzt-home-list-date">{{ note.pub_date|date:"d.m.Y" }}</span>
+          <span class="pzt-chip pzt-chip-accent">z opracowaniem</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="pzt-home-section">
+    <div class="pzt-home-section-head">
+      <h2>Z bloga</h2>
+      <a href="/blog/" class="pzt-home-link-more">Wszystkie wpisy &rarr;</a>
+    </div>
+    <ul class="pzt-home-list list-clean">
+      {% for p in posts %}
+      <li>
+        <a class="pzt-home-list-row" href="{{ p.get_absolute_url }}">
+          <span class="pzt-home-list-title">{{ p.title }}</span>
+          <span class="pzt-home-list-date">{{ p.pub_date|date:"d.m.Y" }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="pzt-home-quote-section">
+    <blockquote class="lit-quote pzt-home-quote">Tylko się pierwszy raz daj objąć<br />
+      A niech już sobie krytyk kracze!<br />
+      Choć mnodzy wciąż to z Tobą robią<br />
+      Daj wierzyć &ndash; zrobię to inaczej
+      <small>Jacek Kaczmarski &ndash; <a href="/opracowanie/jacek-kaczmarski-do-muzy-suplikacja-przy-ostrzeniu-piora/">Do muzy suplikacja przy ostrzeniu pióra</a></small>
+    </blockquote>
+  </section>
 </div>
 {% endblock content %}

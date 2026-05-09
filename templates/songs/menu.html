@@ -1,38 +1,26 @@
-<div class="row">
-  <div class="col-md-4">
-    <div class="section">
-      <h2 class="pzt-card-title">Twórcy polscy</h2>
-      <ul class="list-unstyled">
-        {% for artist in polish %}
-        <li>
-          <a href="{{ artist.get_absolute_url }}" title="{{artist.name}}">{{ artist.name }}</a>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
+<div class="card-grid">
+  <div class="section-card">
+    <h2 class="card-title">Twórcy polscy</h2>
+    <ul class="list-clean">
+      {% for artist in polish %}
+      <li><a href="{{ artist.get_absolute_url }}" title="{{ artist.name }}">{{ artist.name }}</a></li>
+      {% endfor %}
+    </ul>
   </div>
-  <div class="col-md-4">
-    <div class="section">
-      <h2 class="pzt-card-title">Twórcy zagraniczni</h2>
-      <ul class="list-unstyled">
-        {% for artist in foreign %}
-        <li>
-          <a href="{{ artist.get_absolute_url }}" title="{{artist.name}}">{{ artist.name }}</a>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
+  <div class="section-card">
+    <h2 class="card-title">Twórcy zagraniczni</h2>
+    <ul class="list-clean">
+      {% for artist in foreign %}
+      <li><a href="{{ artist.get_absolute_url }}" title="{{ artist.name }}">{{ artist.name }}</a></li>
+      {% endfor %}
+    </ul>
   </div>
-  <div class="col-md-4">
-    <div class="section">
-      <h2 class="pzt-card-title">Epigoni, wykonawcy, środowisko piosenki literackiej</h2>
-      <ul class="list-unstyled">
-        {% for artist in community %}
-        <li>
-          <a href="{{ artist.get_absolute_url }}" title="{{artist.name}}">{{ artist.name }}</a>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
+  <div class="section-card">
+    <h2 class="card-title">Epigoni, wykonawcy, środowisko piosenki literackiej</h2>
+    <ul class="list-clean">
+      {% for artist in community %}
+      <li><a href="{{ artist.get_absolute_url }}" title="{{ artist.name }}">{{ artist.name }}</a></li>
+      {% endfor %}
+    </ul>
   </div>
 </div>

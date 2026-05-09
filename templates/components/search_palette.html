@@ -1,0 +1,20 @@
+{% load static %}
+<div class="pzt-palette" id="pzt-palette" role="dialog" aria-modal="true" aria-labelledby="pzt-palette-label" hidden>
+  <div class="pzt-palette-backdrop" data-pzt-palette-close></div>
+  <div class="pzt-palette-card" role="document">
+    <div class="pzt-palette-input-row">
+      <svg class="pzt-palette-icon" aria-hidden="true"><use href="{% static 'icons/sprite.svg' %}#lucide-search"/></svg>
+      <input type="search" id="pzt-palette-input" placeholder="Szukaj piosenek, artystów, artykułów..." aria-label="Szukaj" autocomplete="off" autocorrect="off" spellcheck="false">
+      <kbd class="pzt-palette-kbd" aria-hidden="true">ESC</kbd>
+    </div>
+    <div class="pzt-palette-results" id="pzt-palette-results" role="listbox" aria-label="Wyniki wyszukiwania">
+      <!-- filled by search.js -->
+    </div>
+    <div class="pzt-palette-footer" aria-hidden="true">
+      <span><kbd>↑</kbd><kbd>↓</kbd> nawigacja</span>
+      <span><kbd>↵</kbd> otwórz</span>
+      <span><kbd>esc</kbd> zamknij</span>
+    </div>
+  </div>
+  <span id="pzt-palette-label" class="sr-only">Szukaj na stronie</span>
+</div>

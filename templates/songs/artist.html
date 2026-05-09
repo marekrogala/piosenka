@@ -1,66 +1,81 @@
 {% extends "songs/base.html" %}
 
 {% load static %}
-{% load thumbnail %}
 
-{% block title %}Śpiewnik piosenek {{ name }} - teksty i akordy{% endblock title %}
-{% block description %}Śpiewnik zawiera teksty i akordy do piosenek - artysta: {{ artist }}.{% endblock description %}
+{% block title %}{{ name }} – śpiewnik – teksty i akordy{% endblock title %}
+{% block description %}Piosenki, teksty i akordy oraz opracowania – {{ name }}.{% endblock description %}
+
+{% block page-hero %}{% endblock page-hero %}
 
 {% block content %}
-<div class="container">
-  <h2 class="remove-top-margin pzt-artist-heading">
-    {{ name }}
-  </h2>
-  <p class="lifetime">
-    {% if born_on %} ur. <b>{{ born_on }}</b>{% endif %}{% if born_on and died_on %},{% endif %}
-    {% if died_on %} zm. <b>{{ died_on }}</b> {% endif %}
-  </p>
-  <div class="row">
-    <div class="col-md-8">
-      <div class="section">
-        <h2 class="pzt-card-title">Piosenki</h2>
-        <ul class="list-unstyled">
-          {% for song in songs %}
-          <li><a href="{{ song.get_absolute_url }}">{{ song.title|truncatechars:50 }}
-            {% if song.num_notes == 1 %}
-            {% include 'components/icon.html' with type='tag' %}
-            {% elif song.num_notes > 1 %}
-            {% include 'components/icon.html' with type='tags' %}
-            {% endif %}
-            </a>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
+<div class="pzt-container pzt-artist-page" data-pagefind-meta="kind:artist">
+  <header class="pzt-artist-hero">
+    <div class="pzt-artist-hero-portrait">
+      {% if hero_picture %}
+      {% include "components/responsive_image.html" with ri=hero_picture.ri fallback_src=hero_picture.fallback_src alt=name sizes="(max-width: 600px) 60vw, 320px" width=hero_picture.width height=hero_picture.height css_class="pzt-artist-hero-img" loading="eager" %}
+      {% endif %}
     </div>
-    <div class="col-md-4">
-      {% for note in notes %}
-      {% include "content/note.html" with note=note %}
+    <div class="pzt-artist-hero-body">
+      <h1 class="pzt-artist-hero-name" data-pagefind-meta="title">{{ name }}</h1>
+      {% if born_on or died_on %}
+      <p class="pzt-artist-hero-life">
+        {% if born_on %}ur. {{ born_on|date:"d.m.Y" }}{% endif %}{% if born_on and died_on %} &middot; {% endif %}
+        {% if died_on %}zm. {{ died_on|date:"d.m.Y" }}{% endif %}
+      </p>
+      {% endif %}
+      {% if notes|length > 0 %}
+      <p class="pzt-artist-hero-meta">{{ notes|length }} {% if notes|length == 1 %}notka{% elif notes|length < 5 %}notki{% else %}notek{% endif %}</p>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if notes %}
+  <section class="pzt-artist-notes">
+    {% for note in notes %}
+    {% include "content/note.html" with note=note %}
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <div class="pzt-artist-songs-layout">
+    <section class="pzt-artist-songs">
+      <h2 class="pzt-section-heading">Piosenki</h2>
+      {% for group in song_groups %}
+      <h3 id="song-letter-{{ group.anchor }}" class="pzt-letter-heading pzt-letter-heading-sm">{{ group.letter }}</h3>
+      <ul class="pzt-song-list list-clean">
+        {% for song in group.songs %}
+        <li class="pzt-song-row">
+          <a href="{{ song.get_absolute_url }}">
+            <span class="pzt-song-row-title">{{ song.title }}</span>
+            {% if song.num_notes == 1 %}<span class="pzt-chip pzt-chip-soft">notka</span>{% elif song.num_notes > 1 %}<span class="pzt-chip pzt-chip-soft">{{ song.num_notes }} notki</span>{% endif %}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
       {% endfor %}
 
       {% if epigone_songs %}
-      <div class="section">
-        <h2 class="pzt-card-title">Kompozycje epigońskie</h2>
-        <p style="text-align: center">
-          <ul class="list-unstyled">
-            {% for song in epigone_songs %}
-            <li><a href="{{ song.get_absolute_url }}">{{ song.title }}
-              {% if song.num_notes == 1 %}
-              {% include 'components/icon.html' with type='tag' %}
-              {% elif song.num_notes > 1 %}
-              {% include 'components/icon.html' with type='tags' %}
-              {% endif %}
-              </a>
-            </li>
-            {% endfor %}
-          </ul>
-        </p>
-      </div>
+      <h2 class="pzt-section-heading" style="margin-top:48px">Kompozycje epigońskie</h2>
+      <ul class="pzt-song-list list-clean">
+        {% for song in epigone_songs %}
+        <li class="pzt-song-row">
+          <a href="{{ song.get_absolute_url }}">
+            <span class="pzt-song-row-title">{{ song.title }}</span>
+            {% if song.num_notes == 1 %}<span class="pzt-chip pzt-chip-soft">notka</span>{% elif song.num_notes > 1 %}<span class="pzt-chip pzt-chip-soft">{{ song.num_notes }} notki</span>{% endif %}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
       {% endif %}
-    </div>
-  </div>
-  <hr />
-  {% include "songs/menu.html" %}
-</div>
+    </section>
 
+    {% if song_letters|length > 1 %}
+    <nav class="pzt-jumplist pzt-jumplist-artist" aria-label="Skok do litery">
+      {% for jl in song_letters %}
+      <a href="#song-letter-{{ jl.anchor }}" class="pzt-jumplist-letter">{{ jl.letter }}</a>
+      {% endfor %}
+    </nav>
+    {% endif %}
+  </div>
+</div>
 {% endblock content %}

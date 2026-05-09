@@ -3,43 +3,39 @@
 {% block title %}Blog{% endblock title %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-8">
+<div class="pzt-container">
+  <div class="layout-split">
+    <div>
       {% for post in new_posts %}
-      <div class="section">
-        <div class="content">
-          <h2 class="pzt-card-title">{{ post.title }}
-          </h2>
+      <article class="section-card prose-pzt">
+        <h2 class="card-title">{{ post.title }}</h2>
 
-          {{ post.lead_html|safe }}
+        {{ post.lead_html|safe }}
 
-          {% if post.read_more %}
-          <p><a href="{{ post.get_absolute_url }}">Czytaj dalej i skomentuj</a>.</p>
-          {% else %}
-          <p><a href="{{ post.get_absolute_url }}">Komentarze</a>.</p>
-          {% endif %}
+        {% if post.read_more %}
+        <p><a href="{{ post.get_absolute_url }}">Czytaj dalej i skomentuj</a>.</p>
+        {% else %}
+        <p><a href="{{ post.get_absolute_url }}">Komentarze</a>.</p>
+        {% endif %}
 
-          {% include "components/content_foot.html" with pub_date=post.pub_date author=post.author %}
-        </div>
-      </div>
+        {% include "components/content_foot.html" with pub_date=post.pub_date author=post.author %}
+      </article>
       {% endfor %}
     </div>
 
-    <div class="col-md-4">
-      <div class="section">
-        <h2 class="pzt-card-title">Wszystkie posty</h2>
-        <table class="vtop cleantable">
+    <aside>
+      <div class="section-card">
+        <h2 class="card-title">Wszystkie posty</h2>
+        <ul class="list-clean">
           {% for post in all_posts %}
-          <tr>
-            <td class="pzt-postlist-date"><small>{{ post.pub_date|date:"d.m.Y" }}</small></td>
-            <td><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></td>
-          </tr>
+          <li>
+            <small style="color:var(--color-ink-3)">{{ post.pub_date|date:"d.m.Y" }}</small>
+            &middot; <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+          </li>
           {% endfor %}
-        </table>
+        </ul>
       </div>
-    </div>
+    </aside>
   </div>
 </div>
-
 {% endblock content %}

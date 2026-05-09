@@ -28,22 +28,39 @@ async function main() {
     swDest: OUT,
     globDirectory: path.join(ROOT, "out"),
     globPatterns: [
-      "static/css/**/*.css",
-      "static/js/**/*.js",
+      // App shell — the bundled CSS/JS that base.html actually references.
       "static/CACHE/**/*.{js,css}",
+      "static/css/install-prompt.css",
+      "static/fonts/*.woff2",
+      "static/icons/*.svg",
+      "static/third_party/**/*.{js,css,woff,woff2,ttf,eot,svg}",
+      // App icons + favicons.
       "static/images/icon-192.png",
       "static/images/icon-512.png",
       "static/images/icon-maskable-512.png",
       "static/images/apple-touch-icon.png",
       "static/images/favicon*.png",
       "static/images/feather*.png",
-      "static/images/patterns/*.png",
-      "static/third_party/**/*.{js,css,woff,woff2,ttf,eot,svg}",
-      "index/*.json",
+      // Pagefind search index — small, lets search work offline.
+      "_pagefind/pagefind.js",
+      "_pagefind/pagefind-ui.js",
+      "_pagefind/pagefind-ui.css",
+      "_pagefind/wasm.*.pagefind",
+      "_pagefind/pagefind-entry.json",
+      "_pagefind/pagefind.*.pf_meta",
       "manifest.webmanifest",
       "offline.html",
     ],
-    globIgnores: ["**/node_modules/**", "**/*.map", "_service-worker.bundled.js"],
+    globIgnores: [
+      "**/node_modules/**",
+      "**/*.map",
+      "_service-worker.bundled.js",
+      // Individual unbundled JS — django-compress already bundled them
+      // into static/CACHE/js/output.*.js, which is what HTML loads.
+      "static/js/**",
+      "static/css/output.css",
+      "static/css/input.css",
+    ],
     maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
   });
 

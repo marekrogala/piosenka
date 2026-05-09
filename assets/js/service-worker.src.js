@@ -1,16 +1,15 @@
 // Service worker source. workbox-build's injectManifest replaces the
 // __WB_MANIFEST placeholder with the precache list at build time.
 
-import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
-import { registerRoute, setCatchHandler, NavigationRoute } from "workbox-routing";
 import {
-  StaleWhileRevalidate,
-  NetworkFirst,
-  CacheFirst,
-} from "workbox-strategies";
+  precacheAndRoute,
+  createHandlerBoundToURL,
+  cleanupOutdatedCaches,
+} from "workbox-precaching";
+import { registerRoute, setCatchHandler } from "workbox-routing";
+import { StaleWhileRevalidate, NetworkFirst } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
 import { CacheableResponsePlugin } from "workbox-cacheable-response";
-import { cleanupOutdatedCaches } from "workbox-precaching";
 
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
@@ -23,7 +22,7 @@ self.addEventListener("message", (event) => {
   }
 });
 
-const HTML_PATH_RE = /^\/(opracowanie|spiewnik|artykuly|blog|szukaj|o-stronie)(\/|$)/;
+const HTML_PATH_RE = /^\/(opracowanie|spiewnik|artykuly|blog|szukaj|o-stronie|zapisane)(\/|$)/;
 
 // Song / artist / article / blog pages: stale-while-revalidate.
 // Once visited, they keep working offline; on revisit Workbox refreshes
@@ -62,40 +61,41 @@ registerRoute(
   })
 );
 
-// Cover images, score thumbs etc. served from Google Cloud Storage.
+// Responsive image variants (AVIF / WebP / JPG) generated locally per
+// build into static/img-variants/. Heavy collectively, so we don't
+// precache them — instead cache them as the user reads articles /
+// songs and the browser picks variants from the picture srcset.
 registerRoute(
   ({ url }) =>
-    url.origin === "https://storage.googleapis.com" &&
-    url.pathname.startsWith("/piosenka-media/"),
+    url.origin === self.location.origin &&
+    url.pathname.startsWith("/static/img-variants/"),
   new StaleWhileRevalidate({
-    cacheName: "media-images",
+    cacheName: "image-variants",
     plugins: [
       new CacheableResponsePlugin({ statuses: [0, 200] }),
       new ExpirationPlugin({
-        maxEntries: 200,
-        maxAgeSeconds: 60 * 60 * 24 * 60,
+        maxEntries: 300,
+        maxAgeSeconds: 60 * 60 * 24 * 90,
         purgeOnQuotaError: true,
       }),
     ],
   })
 );
 
-// Google Fonts CSS.
+// Pagefind search index segments are loaded on-demand as the user types.
+// Precache lists the entry + ui assets; this rule catches the rest.
 registerRoute(
-  ({ url }) => url.origin === "https://fonts.googleapis.com",
-  new StaleWhileRevalidate({ cacheName: "google-fonts-stylesheets" })
-);
-
-// Google Fonts files.
-registerRoute(
-  ({ url }) => url.origin === "https://fonts.gstatic.com",
-  new CacheFirst({
-    cacheName: "google-fonts-webfonts",
+  ({ url }) =>
+    url.origin === self.location.origin &&
+    url.pathname.startsWith("/_pagefind/"),
+  new StaleWhileRevalidate({
+    cacheName: "pagefind",
     plugins: [
       new CacheableResponsePlugin({ statuses: [0, 200] }),
       new ExpirationPlugin({
-        maxEntries: 30,
-        maxAgeSeconds: 60 * 60 * 24 * 365,
+        maxEntries: 500,
+        maxAgeSeconds: 60 * 60 * 24 * 30,
+        purgeOnQuotaError: true,
       }),
     ],
   })

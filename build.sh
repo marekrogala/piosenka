@@ -36,3 +36,7 @@ RELEASE=1 python manage.py gen
 
 # Pagefind index — runs AFTER gen.py so the generated HTML is indexed.
 ./tools/pagefind --site out --output-subdir _pagefind --quiet
+
+# Service worker precache manifest — runs LAST so it sees every static
+# asset, generated HTML, and the Pagefind index in out/.
+npm run --silent build:sw

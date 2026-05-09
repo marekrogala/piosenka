@@ -1,0 +1,16 @@
+{
+  "name": "piosenka-pwa-build",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build tooling for PWA assets (service worker, icons).",
+  "scripts": {
+    "build:icons": "node scripts/generate-icons.js",
+    "build:sw": "node scripts/build-sw.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "sharp": "^0.34.5",
+    "workbox-build": "^7.4.0",
+    "workbox-cli": "^7.4.0"
+  }
+}

@@ -1,0 +1,5 @@
+{% if text_authors %}<span>Tekst: {% include "songs/artist_list.html" with artists=text_authors %}</span>{% endif %}
+{% if composers %}<span>Muzyka: {% include "songs/artist_list.html" with artists=composers %}</span>{% endif %}
+{% if translators %}<span>Tłum.: {% include "songs/artist_list.html" with artists=translators %}</span>{% endif %}
+{% if performers %}<span>Wyk.: {% include "songs/artist_list.html" with artists=performers %}</span>{% endif %}
+{% if capo_fret %}<span>Capo: {{ capo_fret }}</span>{% endif %}

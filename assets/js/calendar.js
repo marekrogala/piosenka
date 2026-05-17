@@ -2,14 +2,18 @@ const CALENDAR_ID = "783da56c0eb669182662debbda9deac997e1348cd94ad6e42ff6f697854
 const MAX_EVENTS = 25;
 
 async function fetchEvents() {
+    const eventsList = document.getElementById("pzt-upcoming-events");
+    if (!eventsList) {
+        return;
+    }
+    if (typeof CALENDAR_API_KEY === "undefined" || !CALENDAR_API_KEY || CALENDAR_API_KEY === "STUB") {
+        eventsList.innerHTML = "";
+        return;
+    }
     const now = new Date().toISOString();
     const url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?key=${CALENDAR_API_KEY}&maxResults=${MAX_EVENTS}&orderBy=startTime&singleEvents=true&timeMin=${now}`;
 
     try {
-        const eventsList = document.getElementById("pzt-upcoming-events");
-        if (!eventsList) {
-            return;
-        }
 
         const response = await fetch(url);
         const data = await response.json();
@@ -33,7 +37,7 @@ async function fetchEvents() {
         }
     } catch (error) {
         console.error("Error fetching events:", error);
-        document.getElementById("pzt-upcoming-events").innerHTML = "<li>Wystąpił błąd.</li>";
+        eventsList.innerHTML = "<li>Wystąpił błąd.</li>";
     }
 }
 

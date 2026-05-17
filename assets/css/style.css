@@ -2,6 +2,31 @@ body {
     background: url("../images/patterns/groovepaper.png");
 }
 
+/* Accessibility: skip link, visible only when focused */
+.pzt-skip-link {
+    position: absolute;
+    top: -40px;
+    left: 8px;
+    z-index: 2000;
+    padding: 6px 12px;
+    background: #0088cc;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.pzt-skip-link:focus {
+    top: 8px;
+    color: #fff;
+}
+
+/* Mobile: keep form controls at ≥16px so iOS doesn't zoom on focus. */
+@media (max-width: 767px) {
+    input, select, textarea, .form-control {
+        font-size: 16px;
+    }
+}
+
 @media screen {
     body {
         padding-top: 41px;

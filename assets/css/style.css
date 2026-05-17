@@ -15,12 +15,21 @@
 
 body {
     background: url("../images/patterns/groovepaper.png");
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
 }
 
 @media screen {
     body {
-        padding-top: 50px;
+        padding-top: calc(50px + env(safe-area-inset-top));
     }
+}
+
+/* Honor iOS notch on the fixed navbar so its content clears the safe area. */
+.pzt .navbar.fixed-top {
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
 }
 
 p, .section p {

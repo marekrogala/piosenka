@@ -15,12 +15,14 @@
 
 body {
     background: url("../images/patterns/groovepaper.png");
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
 }
 
 @media screen {
     body {
-        /* Clear the fixed navbar. Navbar is shrunk to ~50px below. */
-        padding-top: 50px;
+        /* Clear the fixed navbar (~50px) + iOS safe-area on top. */
+        padding-top: calc(50px + env(safe-area-inset-top));
     }
 }
 
@@ -29,6 +31,12 @@ body {
    site look more spread out than the legacy layout intended. */
 .container {
     max-width: 1170px;
+}
+
+/* Honor iOS notch on the fixed navbar so its content clears the safe area.
+   Added to existing --bs-navbar-padding-y (0.25rem) rather than replacing. */
+.pzt .navbar.fixed-top {
+    padding-top: calc(0.25rem + env(safe-area-inset-top));
 }
 
 p, .section p {

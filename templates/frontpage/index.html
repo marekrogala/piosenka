@@ -64,7 +64,7 @@
             <h2 class="pzt-card-title">{{ note.title }}</h2>
             {% if note.image_thumb %}
             <div class="pzt-thumbnail thumbnail-host">
-              <img src="{{note.image_thumb}}" />
+              <img src="{{note.image_thumb}}" alt="" />
             </div>
             {% endif %}
             {{ note.content_html|safe }}

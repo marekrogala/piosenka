@@ -41,6 +41,7 @@
   </head>
 
   <body class="pzt">
+    <a class="pzt-skip-link" href="#main">Przejdź do treści</a>
     <nav class="navbar navbar-inverse navbar-fixed-top hidden-print">
     <div class="container">
       <!-- Brand and toggle get grouped for better mobile display -->
@@ -125,7 +126,9 @@
       </div>
     </div>
 
+    <main role="main" id="main">
     {% block content %} {% endblock content %}
+    </main>
     <div class="footer hidden-print">
       <div class="container">
         <div class="row">

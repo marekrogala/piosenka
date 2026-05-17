@@ -71,12 +71,9 @@
             {{ content_html|safe }}
           </div>
 
-          <details class="song-info-mobile d-md-none">
-            <summary>Informacje o utworze</summary>
-            <div class="song-info">
-              {% include "songs/_song_info.html" %}
-            </div>
-          </details>
+          <div class="song-info song-info-mobile d-md-none">
+            {% include "songs/_song_info.html" %}
+          </div>
 
           {% include "components/content_foot.html" with action="Dodane" %}
         </div>

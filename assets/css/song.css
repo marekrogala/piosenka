@@ -89,28 +89,11 @@
     }
 }
 
-/* Song metadata as a tap-to-expand details panel on mobile; the same
-   content stays in the desktop column-grid above (see song.html). */
+/* Song metadata block on mobile: visible by default after the lyrics
+   so users get author / composer / capo info without an extra tap.
+   Same content as the desktop column-grid above (see song.html). */
 .song-info-mobile {
-    margin: 16px 0;
-    border-top: 1px solid #E3E3E3;
+    margin: 16px 0 0 0;
     padding-top: 12px;
-}
-.song-info-mobile > summary {
-    cursor: pointer;
-    font-weight: bold;
-    padding: 8px 0;
-    list-style: none;
-    color: #428bca;
-}
-.song-info-mobile > summary::-webkit-details-marker {
-    display: none;
-}
-.song-info-mobile > summary::before {
-    content: "› ";
-    display: inline-block;
-    transition: transform 0.15s ease-in-out;
-}
-.song-info-mobile[open] > summary::before {
-    transform: rotate(90deg);
+    border-top: 1px solid #E3E3E3;
 }

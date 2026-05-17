@@ -16,6 +16,10 @@
         <div class="content">
           <h1>{{ title }}</h1>
 
+          <div class="song-info-crumbs d-md-none">
+            {% include "songs/_song_info_crumbs.html" %}
+          </div>
+
           <div class="row song-header">
             <div class="col-md-6 d-none d-md-block">
               <div class="song-info">
@@ -69,10 +73,6 @@
 
           <div class="lyrics">
             {{ content_html|safe }}
-          </div>
-
-          <div class="song-info song-info-mobile d-md-none">
-            {% include "songs/_song_info.html" %}
           </div>
 
           {% include "components/content_foot.html" with action="Dodane" %}

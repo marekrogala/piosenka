@@ -32,7 +32,7 @@
 }
 
 /* Enlarge gadget controls to a comfortable touch target on phones. */
-@media (max-width: 767.98px) {
+@media (max-width: 991.98px) {
     .song-gadget .gadget-row .btn,
     .autoscroll-bar .btn {
         min-width: 44px;

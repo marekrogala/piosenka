@@ -376,3 +376,44 @@ h2 {
 .lyrics.zebra table tr:nth-child(even) {
       background-color: rgba(0, 0, 0, 0.05);
 }
+
+/* YouTube click-to-load placeholder — defers iframe to improve mobile LCP */
+
+.pzt-yt-placeholder {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    padding: 0;
+    border: 0;
+    background: #000;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.pzt-yt-placeholder-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.pzt-yt-placeholder-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    opacity: 0.85;
+    transition: opacity 0.15s ease-in-out;
+}
+
+.pzt-yt-placeholder:hover .pzt-yt-placeholder-play,
+.pzt-yt-placeholder:focus-visible .pzt-yt-placeholder-play {
+    opacity: 1;
+}
+
+.pzt-yt-placeholder:focus-visible {
+    outline: 3px solid #0088cc;
+    outline-offset: 2px;
+}

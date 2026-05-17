@@ -27,7 +27,7 @@
   const fasterBtn = document.querySelector('.autoscroll-faster');
   const closeBtn = document.querySelector('.autoscroll-close');
   const content = document.querySelector('.lyrics-content');
-  const ytIframe = document.querySelector('iframe[src*="youtube.com"]');
+  let ytIframe = document.querySelector('iframe[src*="youtube.com"]');
 
   if (!toggleBtn || !bar || !content) {
     return;
@@ -224,6 +224,12 @@
   }
 
   initYouTubeIntegration();
+
+  //re-init when YT iframe is lazy-loaded via click-to-load placeholder
+  document.addEventListener('pzt:youtube-loaded', function (e) {
+    ytIframe = e.detail && e.detail.iframe;
+    initYouTubeIntegration();
+  });
 
   //events
   toggleBtn.addEventListener('click', function () {

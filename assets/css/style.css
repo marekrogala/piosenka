@@ -337,6 +337,33 @@ a:hover, a:focus {
     padding-top: 20px;
 }
 
+/* Lead-quote disclosure: visible inline on desktop, tap-to-expand on mobile.
+   Default HTML is <details open> so non-JS clients always see the quote;
+   lead-quote.js closes it on viewports below 768px. */
+.lead-quote-disclosure > summary {
+    cursor: pointer;
+    color: #428bca;
+    font-size: 14px;
+    padding: 6px 0;
+    list-style: none;
+}
+.lead-quote-disclosure > summary::-webkit-details-marker {
+    display: none;
+}
+.lead-quote-disclosure > summary::before {
+    content: "› ";
+    display: inline-block;
+    transition: transform 0.15s ease-in-out;
+}
+.lead-quote-disclosure[open] > summary::before {
+    transform: rotate(90deg);
+}
+@media (min-width: 768px) {
+    .lead-quote-disclosure > summary {
+        display: none;
+    }
+}
+
 /* forms */
 
 .formset th, .formset td {

@@ -94,6 +94,8 @@
             {% endblock header %}
           </div>
           <div class="col-md-6 lead-quote">
+            <details open class="lead-quote-disclosure">
+              <summary>Pokaż cytat</summary>
             {% block quote %}
             {% if section and section == 'articles' %}
               <blockquote class="lyrics-quote">Niech toną w gorzale wspomnienia<br />
@@ -115,6 +117,7 @@
               </blockquote>
             {% endif %}
             {% endblock quote %}
+            </details>
           </div>
         </div>
       </div>
@@ -145,6 +148,7 @@
     <script src="{% static "js/dark.js" %}"></script>
     <script src="{% static "js/zebra.js" %}"></script>
     <script src="{% static "js/autoscroll.js" %}"></script>
+    <script src="{% static "js/lead-quote.js" %}"></script>
     {% endcompress %}
 
     {% block extra-scripts %}{% endblock extra-scripts %}

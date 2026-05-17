@@ -1,0 +1,31 @@
+{% if original_title %}
+<p><b>Tytuł oryginalny:</b> <i>{{ original_title }}</i></p>
+{% endif %}
+
+{% if text_authors %}
+<p><b>Tekst:</b>
+{% include "songs/artist_list.html" with artists=text_authors %}
+</p>
+{% endif %}
+
+{% if composers %}
+<p><b>Muzyka:</b>
+{% include "songs/artist_list.html" with artists=composers %}
+</p>
+{% endif %}
+
+{% if translators %}
+<p><b>Tłumaczenie:</b>
+{% include "songs/artist_list.html" with artists=translators %}
+</p>
+{% endif %}
+
+{% if performers %}
+<p><b>Wykonanie:</b>
+{% include "songs/artist_list.html" with artists=performers %}
+</p>
+{% endif %}
+
+{% if capo_fret %}
+<p><b>Kapodaster:</b> {{ capo_fret }} </p>
+{% endif %}

@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+      - my-main
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install Python dependencies
+        run: uv sync
+
+      - name: Check for package.json
+        id: pkg
+        run: |
+          if [ -f package.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Node.js
+        if: steps.pkg.outputs.exists == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install Node dependencies
+        if: steps.pkg.outputs.exists == 'true'
+        run: npm install
+
+      - name: Create private config file
+        run: |
+          cat > private_gen_vars.yaml << EOF
+          calendar_api_key: ""
+          EOF
+
+      - name: Run tests
+        run: uv run python manage.py test
+
+      - name: Build site
+        run: uv run bash build.sh

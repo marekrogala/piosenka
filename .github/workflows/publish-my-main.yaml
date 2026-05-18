@@ -1,0 +1,54 @@
+name: Publish to Firebase (my-main)
+
+on:
+  push:
+    branches:
+      - my-main
+
+jobs:
+  generate-and-publish:
+    name: Generate output files and publish to my Firebase
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install Python dependencies
+        run: uv sync
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Create private config file
+        run: |
+          cat > private_gen_vars.yaml << EOF
+          calendar_api_key: ""
+          EOF
+
+      - name: Run tests
+        run: uv run python manage.py test
+
+      - name: Build site
+        run: uv run bash build.sh
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: piosenka-7fd48

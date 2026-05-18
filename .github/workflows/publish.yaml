@@ -25,6 +25,14 @@ jobs:
       - name: Install Python dependencies
         run: uv sync
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Node dependencies
+        run: npm install
+
       - name: Create private config file
         run: |
           cat > private_gen_vars.yaml << EOF
@@ -36,11 +44,6 @@ jobs:
 
       - name: Build site
         run: uv run bash build.sh
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools

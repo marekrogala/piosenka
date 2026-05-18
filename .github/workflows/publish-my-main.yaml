@@ -1,0 +1,96 @@
+name: Deploy to Firebase
+
+on:
+  push:
+    branches:
+      - my-main
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      channel_id:
+        description: 'Preview channel name (URL slug)'
+        required: true
+        default: 'manual'
+      expires:
+        description: 'Channel expiration (e.g. 1h, 7d, 30d, never)'
+        required: false
+        default: '7d'
+
+jobs:
+  build-and-deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install Python dependencies
+        run: uv sync
+
+      - name: Check for package.json
+        id: pkg
+        run: |
+          if [ -f package.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Node.js
+        if: steps.pkg.outputs.exists == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install Node dependencies
+        if: steps.pkg.outputs.exists == 'true'
+        run: npm install
+
+      - name: Create private config file
+        run: |
+          cat > private_gen_vars.yaml << EOF
+          calendar_api_key: ""
+          EOF
+
+      - name: Run tests
+        run: uv run python manage.py test
+
+      - name: Build site
+        run: uv run bash build.sh
+
+      - name: Deploy to Firebase Hosting (live)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/my-main'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: piosenka-7fd48
+          channelId: live
+
+      - name: Deploy to Firebase Hosting (PR preview)
+        if: github.event_name == 'pull_request'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: piosenka-7fd48
+          expires: 7d
+
+      - name: Deploy to Firebase Hosting (manual preview)
+        if: github.event_name == 'workflow_dispatch'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: piosenka-7fd48
+          channelId: ${{ github.event.inputs.channel_id }}
+          expires: ${{ github.event.inputs.expires }}

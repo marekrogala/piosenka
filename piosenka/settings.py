@@ -147,7 +147,7 @@ DEFAULT_FROM_EMAIL = "noreply@piosenkaztekstem.pl"
 
 # PWA / web app manifest. Override these in a fork's local settings to rebrand.
 MANIFEST_NAME = "Piosenka z tekstem"
-MANIFEST_SHORT_NAME = "Piosenka"
+MANIFEST_SHORT_NAME = "Piosenka z tekstem"
 MANIFEST_DESCRIPTION = "Śpiewnik piosenki literackiej, wydarzenia, refleksje"
 MANIFEST_THEME_COLOR = "#212121"
 MANIFEST_BACKGROUND_COLOR = "#ffffff"

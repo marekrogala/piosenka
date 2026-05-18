@@ -50,14 +50,18 @@ jobs:
           SAFE=$(echo "$RAW" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9_-' '-' | cut -c1-63)
           echo "id=$SAFE" >> "$GITHUB_OUTPUT"
 
+      - name: Write service account credentials
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json" >> "$GITHUB_ENV"
+
       - name: Deploy to Firebase preview channel
         id: deploy
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           OUTPUT=$(firebase hosting:channel:deploy "${{ steps.channel.outputs.id }}" \
-            --project piosenka-site \
-            --token "$FIREBASE_TOKEN" \
+            --project piosenka-7fd48 \
             --expires "${{ github.event.inputs.expires || '7d' }}" \
             --json)
           echo "$OUTPUT"

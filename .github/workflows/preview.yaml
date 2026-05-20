@@ -58,56 +58,10 @@ jobs:
           echo "id=$SAFE" >> "$GITHUB_OUTPUT"
 
       - name: Deploy to Firebase preview channel
-        id: deploy
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          CHANNEL_ID: ${{ steps.channel.outputs.id }}
-          EXPIRES: ${{ github.event.inputs.expires || '7d' }}
-        run: |
-          OUTPUT=$(firebase hosting:channel:deploy "$CHANNEL_ID" \
-            --project piosenka-site \
-            --token "$FIREBASE_TOKEN" \
-            --expires "$EXPIRES" \
-            --json)
-          echo "$OUTPUT"
-          URL=$(echo "$OUTPUT" | jq -r '.result | to_entries[0].value.url')
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
-
-      - name: Post preview link as PR comment
-        if: steps.deploy.outputs.url != ''
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          BRANCH: ${{ github.head_ref || github.ref_name }}
-          URL: ${{ steps.deploy.outputs.url }}
-          EXPIRES: ${{ github.event.inputs.expires || '7d' }}
-        run: |
-          if [ -n "$PR_NUMBER" ]; then
-            PR="$PR_NUMBER"
-          else
-            PR=$(gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
-          fi
-          if [ -z "$PR" ]; then
-            echo "No open PR for branch $BRANCH; skipping comment."
-            exit 0
-          fi
-
-          MARKER="<!-- firebase-preview-channel -->"
-          BODY="$MARKER
-          Preview channel deployed for \`$BRANCH\`:
-
-          $URL
-
-          (expires in $EXPIRES; pushing more commits to this branch refreshes the preview)"
-
-          EXISTING=$(gh api "repos/$REPO/issues/$PR/comments" \
-            --jq "[.[] | select(.body | startswith(\"$MARKER\"))][0].id // empty")
-
-          if [ -n "$EXISTING" ]; then
-            gh api -X PATCH "repos/$REPO/issues/comments/$EXISTING" -f body="$BODY" > /dev/null
-            echo "Updated existing preview comment on PR #$PR"
-          else
-            gh pr comment "$PR" --repo "$REPO" --body "$BODY"
-            echo "Posted new preview comment on PR #$PR"
-          fi
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: piosenka-site
+          channelId: ${{ steps.channel.outputs.id }}
+          expires: ${{ github.event.inputs.expires || '7d' }}

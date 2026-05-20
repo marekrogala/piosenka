@@ -16,6 +16,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  checks: write
 
 concurrency:
   group: preview-${{ github.event.pull_request.number || github.ref }}
